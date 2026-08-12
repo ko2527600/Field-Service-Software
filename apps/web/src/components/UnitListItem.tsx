@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { EXTINGUISHER_TYPE_LABELS } from "@ledgio/shared";
+import { EXTINGUISHER_TYPE_LABELS } from "@firearmour/shared";
 import type { Unit } from "../api/types.js";
 import { StatusBadge } from "./StatusBadge.js";
 

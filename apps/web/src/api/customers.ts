@@ -1,4 +1,4 @@
-import type { CustomerInput } from "@ledgio/shared";
+import type { CustomerInput } from "@firearmour/shared";
 import { api } from "./client.js";
 import type { Customer, CustomerWithUnits } from "./types.js";
 

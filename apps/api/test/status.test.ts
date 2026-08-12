@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getUnitStatus, DUE_SOON_WINDOW_DAYS } from "@ledgio/shared";
+import { getUnitStatus, DUE_SOON_WINDOW_DAYS } from "@firearmour/shared";
 
 describe("getUnitStatus", () => {
   const now = new Date("2026-08-12T12:00:00Z");

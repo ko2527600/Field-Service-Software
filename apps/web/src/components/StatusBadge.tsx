@@ -1,4 +1,4 @@
-import { UNIT_STATUS_LABELS, type UnitStatus } from "@ledgio/shared";
+import { UNIT_STATUS_LABELS, type UnitStatus } from "@firearmour/shared";
 
 const STYLES: Record<UnitStatus, string> = {
   ACTIVE: "bg-green-100 text-green-800",

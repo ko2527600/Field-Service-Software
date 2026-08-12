@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { computeNextRenewalDate } from "@ledgio/shared";
+import { computeNextRenewalDate } from "@firearmour/shared";
 
 const prisma = new PrismaClient();
 

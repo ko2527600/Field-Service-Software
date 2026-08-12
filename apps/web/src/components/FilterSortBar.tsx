@@ -1,4 +1,4 @@
-import { UNIT_STATUSES, UNIT_STATUS_LABELS, type UnitStatus } from "@ledgio/shared";
+import { UNIT_STATUSES, UNIT_STATUS_LABELS, type UnitStatus } from "@firearmour/shared";
 
 export type SortOption = "renewalDate:asc" | "renewalDate:desc";
 

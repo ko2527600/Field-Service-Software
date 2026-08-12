@@ -1,4 +1,4 @@
-import type { UnitInput, UnitStatus } from "@ledgio/shared";
+import type { UnitInput, UnitStatus } from "@firearmour/shared";
 import { api } from "./client.js";
 import type { Unit, UnitWithLogs } from "./types.js";
 

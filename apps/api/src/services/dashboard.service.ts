@@ -1,4 +1,4 @@
-import { getUnitStatus } from "@ledgio/shared";
+import { getUnitStatus } from "@firearmour/shared";
 import { prisma } from "../lib/prisma.js";
 import { getDefaultBusinessId } from "../lib/business.js";
 import { serializeUnit } from "./units.service.js";

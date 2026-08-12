@@ -1,4 +1,4 @@
-import type { ExtinguisherType, RenewalPeriod, UnitStatus } from "@ledgio/shared";
+import type { ExtinguisherType, RenewalPeriod, UnitStatus } from "@firearmour/shared";
 
 export type Customer = {
   id: string;

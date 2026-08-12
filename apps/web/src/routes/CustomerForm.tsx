@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { customerInputSchema, type CustomerInput } from "@ledgio/shared";
+import { customerInputSchema, type CustomerInput } from "@firearmour/shared";
 import { createCustomer, getCustomer, updateCustomer } from "../api/customers.js";
 import { FormField, inputClass } from "../components/FormField.js";
 import { useOnlineStatus } from "../hooks/useOnlineStatus.js";

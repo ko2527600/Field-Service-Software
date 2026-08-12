@@ -15,7 +15,7 @@ export function Layout() {
             <span className="text-xl" aria-hidden="true">
               🧯
             </span>
-            <span className="font-semibold">Ledgio</span>
+            <span className="font-semibold">Fire Armour</span>
           </div>
           <InstallPromptButton />
         </header>

@@ -1,4 +1,4 @@
-import type { ServiceLogInput } from "@ledgio/shared";
+import type { ServiceLogInput } from "@firearmour/shared";
 import { api } from "./client.js";
 import type { ServiceLog } from "./types.js";
 

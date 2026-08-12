@@ -1,4 +1,4 @@
-import type { CustomerInput } from "@ledgio/shared";
+import type { CustomerInput } from "@firearmour/shared";
 import { prisma } from "../lib/prisma.js";
 import { getDefaultBusinessId } from "../lib/business.js";
 import { HttpError } from "../middleware/errorHandler.js";

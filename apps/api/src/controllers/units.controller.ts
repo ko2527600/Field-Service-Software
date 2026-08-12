@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { unitInputSchema, unitUpdateSchema } from "@ledgio/shared";
+import { unitInputSchema, unitUpdateSchema } from "@firearmour/shared";
 import { unitListQuerySchema } from "../validation/query.schema.js";
 import * as unitsService from "../services/units.service.js";
 

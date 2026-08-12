@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { customerInputSchema } from "@ledgio/shared";
+import { customerInputSchema } from "@firearmour/shared";
 import { customerListQuerySchema } from "../validation/query.schema.js";
 import * as customersService from "../services/customers.service.js";
 

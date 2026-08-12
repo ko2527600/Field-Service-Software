@@ -9,7 +9,7 @@ import {
   RENEWAL_PERIODS,
   RENEWAL_PERIOD_LABELS,
   type UnitInput,
-} from "@ledgio/shared";
+} from "@firearmour/shared";
 import { createUnit, getUnit, updateUnit } from "../api/units.js";
 import { FormField, inputClass } from "../components/FormField.js";
 import { useOnlineStatus } from "../hooks/useOnlineStatus.js";

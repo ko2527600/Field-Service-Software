@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { EXTINGUISHER_TYPE_LABELS, RENEWAL_PERIOD_LABELS } from "@ledgio/shared";
+import { EXTINGUISHER_TYPE_LABELS, RENEWAL_PERIOD_LABELS } from "@firearmour/shared";
 import { deleteUnit, getUnit } from "../api/units.js";
 import type { UnitWithLogs } from "../api/types.js";
 import { StatusBadge } from "../components/StatusBadge.js";

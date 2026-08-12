@@ -3,13 +3,13 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ledgio
-      POSTGRES_PASSWORD: ledgio
-      POSTGRES_DB: ledgio
+      POSTGRES_USER: firearmour
+      POSTGRES_PASSWORD: firearmour
+      POSTGRES_DB: firearmour
     ports:
       - "5432:5432"
     volumes:
-      - ledgio_db_data:/var/lib/postgresql/data
+      - firearmour_db_data:/var/lib/postgresql/data
 
 volumes:
-  ledgio_db_data:
+  firearmour_db_data:

@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { serviceLogInputSchema } from "@ledgio/shared";
+import { serviceLogInputSchema } from "@firearmour/shared";
 import * as serviceLogsService from "../services/serviceLogs.service.js";
 
 export async function list(req: Request, res: Response) {

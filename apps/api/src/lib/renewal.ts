@@ -1,1 +1,1 @@
-export { computeNextRenewalDate } from "@ledgio/shared";
+export { computeNextRenewalDate } from "@firearmour/shared";

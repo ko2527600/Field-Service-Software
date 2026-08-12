@@ -1,5 +1,5 @@
 {
-  "name": "ledgio",
+  "name": "firearmour",
   "private": true,
   "workspaces": [
     "apps/*",

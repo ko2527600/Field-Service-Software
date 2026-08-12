@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeNextRenewalDate } from "@ledgio/shared";
+import { computeNextRenewalDate } from "@firearmour/shared";
 
 describe("computeNextRenewalDate", () => {
   const base = new Date("2026-01-15T00:00:00Z");

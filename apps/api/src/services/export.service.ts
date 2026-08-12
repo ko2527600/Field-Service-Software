@@ -1,4 +1,4 @@
-import { UNIT_STATUS_LABELS } from "@ledgio/shared";
+import { UNIT_STATUS_LABELS } from "@firearmour/shared";
 import { prisma } from "../lib/prisma.js";
 import { getDefaultBusinessId } from "../lib/business.js";
 import { serializeUnit } from "./units.service.js";

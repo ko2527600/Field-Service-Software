@@ -1,4 +1,4 @@
-import type { ServiceLogInput } from "@ledgio/shared";
+import type { ServiceLogInput } from "@firearmour/shared";
 import { prisma } from "../lib/prisma.js";
 import { HttpError } from "../middleware/errorHandler.js";
 

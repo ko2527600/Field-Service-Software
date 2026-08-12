@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { UnitStatus } from "@ledgio/shared";
+import type { UnitStatus } from "@firearmour/shared";
 import { listUnits } from "../api/units.js";
 import type { Unit } from "../api/types.js";
 import { UnitListItem } from "../components/UnitListItem.js";

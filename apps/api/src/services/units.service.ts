@@ -1,6 +1,6 @@
 import type { Unit } from "@prisma/client";
-import { getUnitStatus, computeNextRenewalDate, type UnitStatus } from "@ledgio/shared";
-import type { UnitInput, UnitUpdateInput } from "@ledgio/shared";
+import { getUnitStatus, computeNextRenewalDate, type UnitStatus } from "@firearmour/shared";
+import type { UnitInput, UnitUpdateInput } from "@firearmour/shared";
 import { prisma } from "../lib/prisma.js";
 import { HttpError } from "../middleware/errorHandler.js";
 

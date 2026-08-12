@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon.png"],
       manifest: {
-        name: "Ledgio — Customer & Renewal Tracker",
-        short_name: "Ledgio",
+        name: "Fire Armour — Customer & Renewal Tracker",
+        short_name: "Fire Armour",
         description: "Track fire extinguisher customers, units, and renewals",
         start_url: "/",
         display: "standalone",

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UNIT_STATUSES } from "@ledgio/shared";
+import { UNIT_STATUSES } from "@firearmour/shared";
 
 export const unitListQuerySchema = z.object({
   status: z.enum(UNIT_STATUSES).optional(),

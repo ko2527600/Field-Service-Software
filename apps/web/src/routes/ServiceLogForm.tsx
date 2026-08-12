@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { serviceLogInputSchema, computeNextRenewalDate, type ServiceLogInput } from "@ledgio/shared";
+import { serviceLogInputSchema, computeNextRenewalDate, type ServiceLogInput } from "@firearmour/shared";
 import { getUnit } from "../api/units.js";
 import { createServiceLog } from "../api/serviceLogs.js";
 import type { UnitWithLogs } from "../api/types.js";

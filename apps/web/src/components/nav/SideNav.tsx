@@ -14,7 +14,7 @@ export function SideNav() {
         <span className="text-xl" aria-hidden="true">
           🧯
         </span>
-        <span className="font-semibold text-lg">Ledgio</span>
+        <span className="font-semibold text-lg">Fire Armour</span>
       </div>
       <ul className="space-y-1">
         {items.map((item) => (
