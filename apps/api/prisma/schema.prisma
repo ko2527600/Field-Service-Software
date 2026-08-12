@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Business {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  customers Customer[]
+
+  @@map("businesses")
+}
+
+model Customer {
+  id           String    @id @default(uuid())
+  businessId   String
+  business     Business  @relation(fields: [businessId], references: [id])
+
+  name         String
+  contactPhone String?
+  contactEmail String?
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  state        String?
+  postalCode   String?
+  businessType String?
+  notes        String?
+  archivedAt   DateTime?
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  units        Unit[]
+
+  @@index([businessId])
+  @@map("customers")
+}
+
+enum RenewalPeriod {
+  MONTHLY
+  QUARTERLY
+  SEMI_ANNUAL
+  ANNUAL
+  CUSTOM
+}
+
+enum ExtinguisherType {
+  ABC_DRY_CHEMICAL
+  CO2
+  WATER
+  FOAM
+  WET_CHEMICAL
+  CLASS_D
+  OTHER
+}
+
+model Unit {
+  id                 String           @id @default(uuid())
+  customerId         String
+  customer           Customer         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  type               ExtinguisherType
+  size               String
+  serialNumber       String
+  installDate        DateTime
+  renewalPeriod      RenewalPeriod
+  customIntervalDays Int?
+
+  renewalDate        DateTime
+  location           String?
+  archivedAt         DateTime?
+
+  createdAt          DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  serviceLogs        ServiceLog[]
+
+  @@index([customerId])
+  @@index([renewalDate])
+  @@map("units")
+}
+
+model ServiceLog {
+  id            String   @id @default(uuid())
+  unitId        String
+  unit          Unit     @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  serviceDate   DateTime
+  technician    String?
+  amountCharged Decimal? @db.Decimal(10, 2)
+  notes         String?
+  nextDueDate   DateTime
+
+  createdAt     DateTime @default(now())
+
+  @@index([unitId])
+  @@map("service_logs")
+}

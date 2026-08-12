@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: firearmour
+      POSTGRES_PASSWORD: firearmour
+      POSTGRES_DB: firearmour
+    ports:
+      - "5432:5432"
+    volumes:
+      - firearmour_db_data:/var/lib/postgresql/data
+
+volumes:
+  firearmour_db_data:
