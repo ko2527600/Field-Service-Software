@@ -4,10 +4,11 @@ import * as authService from "../services/auth.service.js";
 import { SESSION_COOKIE_NAME } from "../lib/auth.js";
 import { HttpError } from "../middleware/errorHandler.js";
 
+const isProduction = process.env.NODE_ENV === "production";
 const cookieOptions = {
   httpOnly: true,
-  sameSite: "lax" as const,
-  secure: process.env.NODE_ENV === "production",
+  sameSite: isProduction ? ("none" as const) : ("lax" as const),
+  secure: isProduction,
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
