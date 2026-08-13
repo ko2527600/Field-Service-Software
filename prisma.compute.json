@@ -3,12 +3,17 @@
   "app": {
     "name": "api",
     "root": "apps/api",
-    "framework": "bun",
-    "entry": "src/index.ts",
-    "httpPort": 3000,
+    "framework": "custom",
+    "httpPort": 4000,
+    "env": {
+      "vars": {
+        "PORT": "4000"
+      }
+    },
     "build": {
       "command": "npm run build",
-      "outputDirectory": "."
+      "outputDirectory": "dist",
+      "entrypoint": "index.js"
     }
   }
 }
