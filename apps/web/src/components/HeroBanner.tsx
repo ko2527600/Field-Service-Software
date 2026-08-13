@@ -77,31 +77,16 @@ export function HeroBanner() {
         {heroCards.map((card) => (
           <div
             key={card.id}
-            className={`snap-center shrink-0 w-[85%] sm:w-[70%] md:w-[380px] rounded-2xl bg-gradient-to-br ${card.gradient} text-white p-5 shadow-card`}
+            style={{ backgroundImage: `url(${card.photo})` }}
+            className="relative snap-center shrink-0 w-[85%] sm:w-[70%] md:w-[380px] h-44 rounded-2xl bg-cover bg-center shadow-card overflow-hidden"
           >
-            <card.Icon className="h-7 w-7 mb-3 opacity-90" strokeWidth={1.8} aria-hidden="true" />
-            <h3 className="font-bold text-lg leading-tight">{card.title}</h3>
-            <p className="text-sm text-white/85 mt-1">{card.body}</p>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
+            <div className="relative h-full flex flex-col justify-end p-5 text-white">
+              <card.Icon className="h-7 w-7 mb-3 opacity-90" strokeWidth={1.8} aria-hidden="true" />
+              <h3 className="font-bold text-lg leading-tight">{card.title}</h3>
+              <p className="text-sm text-white/85 mt-1">{card.body}</p>
+            </div>
           </div>
-        ))}
-      </div>
-      <div className="flex justify-center gap-1.5 mt-3" role="tablist" aria-label="Slide indicators">
-        {heroCards.map((card, i) => (
-          <button
-            key={card.id}
-            type="button"
-            role="tab"
-            aria-selected={i === activeIndex}
-            aria-label={`Go to slide ${i + 1}`}
-            onClick={() => {
-              pauseThenResume();
-              scrollToIndex(i);
-              setActiveIndex(i);
-            }}
-            className={`h-1.5 rounded-full transition-all ${
-              i === activeIndex ? "w-5 bg-brand" : "w-1.5 bg-gray-300"
-            }`}
-          />
         ))}
       </div>
     </section>

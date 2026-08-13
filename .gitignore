@@ -8,3 +8,4 @@ build/
 coverage/
 apps/web/dev-dist/
 .vite/
+*.timestamp-*.mjs
