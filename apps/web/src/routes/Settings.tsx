@@ -38,6 +38,7 @@ export default function Settings() {
           postalCode: b.postalCode ?? "",
           phone: b.phone ?? "",
           email: b.email ?? "",
+          email2: b.email2 ?? "",
           smsRemindersEnabled: b.smsRemindersEnabled,
           smsReminderDaysBefore: b.smsReminderDaysBefore,
         }),
@@ -93,6 +94,9 @@ export default function Settings() {
             <input className={inputClass} type="email" {...register("email")} />
           </FormField>
         </div>
+        <FormField label="Second email (optional)" error={errors.email2?.message}>
+          <input className={inputClass} type="email" {...register("email2")} />
+        </FormField>
         <FormField label="Address" error={errors.addressLine1?.message}>
           <input className={inputClass} {...register("addressLine1")} />
         </FormField>

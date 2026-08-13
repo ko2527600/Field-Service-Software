@@ -11,6 +11,7 @@ export type Business = {
   postalCode: string | null;
   phone: string | null;
   email: string | null;
+  email2: string | null;
   smsRemindersEnabled: boolean;
   smsReminderDaysBefore: number;
   createdAt: string;
