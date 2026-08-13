@@ -8,13 +8,35 @@ datasource db {
 }
 
 model Business {
-  id        String   @id @default(uuid())
-  name      String
-  createdAt DateTime @default(now())
+  id           String   @id @default(uuid())
+  name         String
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  state        String?
+  postalCode   String?
+  phone        String?
+  email        String?
+  nextInvoiceSeq Int    @default(1)
+  createdAt    DateTime @default(now())
 
   customers Customer[]
+  users     User[]
+  invoices  Invoice[]
 
   @@map("businesses")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  businessId   String
+  business     Business @relation(fields: [businessId], references: [id])
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  @@index([businessId])
+  @@map("users")
 }
 
 model Customer {
@@ -38,6 +60,7 @@ model Customer {
   updatedAt    DateTime  @updatedAt
 
   units        Unit[]
+  invoices     Invoice[]
 
   @@index([businessId])
   @@map("customers")
@@ -81,6 +104,7 @@ model Unit {
   updatedAt           DateTime @updatedAt
 
   serviceLogs        ServiceLog[]
+  invoiceLineItems   InvoiceLineItem[]
 
   @@index([customerId])
   @@index([renewalDate])
@@ -102,4 +126,44 @@ model ServiceLog {
 
   @@index([unitId])
   @@map("service_logs")
+}
+
+model Invoice {
+  id            String   @id @default(uuid())
+  businessId    String
+  business      Business @relation(fields: [businessId], references: [id])
+  customerId    String
+  customer      Customer @relation(fields: [customerId], references: [id])
+
+  invoiceNumber String   @unique
+  issueDate     DateTime @default(now())
+  dueDate       DateTime?
+  notes         String?
+  subtotal      Decimal  @db.Decimal(10, 2)
+  total         Decimal  @db.Decimal(10, 2)
+
+  createdAt     DateTime @default(now())
+
+  lineItems     InvoiceLineItem[]
+
+  @@index([businessId])
+  @@index([customerId])
+  @@map("invoices")
+}
+
+model InvoiceLineItem {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  unitId      String?
+  unit        Unit?    @relation(fields: [unitId], references: [id])
+
+  description String
+  serviceType String?
+  quantity    Int      @default(1)
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  lineTotal   Decimal  @db.Decimal(10, 2)
+
+  @@index([invoiceId])
+  @@map("invoice_line_items")
 }

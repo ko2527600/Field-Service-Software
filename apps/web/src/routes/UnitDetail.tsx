@@ -4,6 +4,7 @@ import { EXTINGUISHER_TYPE_LABELS, RENEWAL_PERIOD_LABELS } from "@firearmour/sha
 import { deleteUnit, getUnit } from "../api/units.js";
 import type { UnitWithLogs } from "../api/types.js";
 import { StatusBadge } from "../components/StatusBadge.js";
+import { PlusIcon, MapPinIcon, ClockIcon } from "../components/icons/index.js";
 
 export default function UnitDetail() {
   const { id } = useParams();
@@ -37,7 +38,7 @@ export default function UnitDetail() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold">
+          <h1 className="text-xl font-extrabold tracking-tight">
             {EXTINGUISHER_TYPE_LABELS[unit.type]} · {unit.size}
           </h1>
           {unit.customerName && (
@@ -49,19 +50,41 @@ export default function UnitDetail() {
         <StatusBadge status={unit.status} />
       </div>
 
-      <div className="rounded-lg border border-gray-200 bg-white p-4 text-sm space-y-1">
-        <div>Serial: {unit.serialNumber}</div>
-        <div>Location: {unit.location || "—"}</div>
-        <div>Installed: {new Date(unit.installDate).toLocaleDateString()}</div>
-        <div>Renewal period: {RENEWAL_PERIOD_LABELS[unit.renewalPeriod]}</div>
-        <div>Next due: {new Date(unit.renewalDate).toLocaleDateString()}</div>
+      <div className="rounded-lg border border-gray-200 bg-white p-4 text-sm space-y-2 shadow-card">
+        <div className="flex justify-between">
+          <span className="text-gray-500">Serial</span>
+          <span className="font-medium">{unit.serialNumber}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-gray-500 flex items-center gap-1.5">
+            <MapPinIcon className="h-4 w-4 text-gray-400" strokeWidth={1.8} />
+            Location
+          </span>
+          <span className="font-medium">{unit.location || "—"}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-500">Installed</span>
+          <span className="font-medium">{new Date(unit.installDate).toLocaleDateString()}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-500">Renewal period</span>
+          <span className="font-medium">{RENEWAL_PERIOD_LABELS[unit.renewalPeriod]}</span>
+        </div>
+        <div className="flex justify-between items-center pt-1 border-t border-gray-100">
+          <span className="text-gray-500 flex items-center gap-1.5">
+            <ClockIcon className="h-4 w-4 text-gray-400" strokeWidth={1.8} />
+            Next due
+          </span>
+          <span className="font-bold">{new Date(unit.renewalDate).toLocaleDateString()}</span>
+        </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <Link
           to={`/units/${unit.id}/service/new`}
-          className="rounded-lg bg-brand text-white text-sm font-medium px-3 py-1.5 hover:bg-brand-dark"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-brand text-white text-sm font-medium px-3 py-1.5 shadow-card hover:bg-brand-dark"
         >
+          <PlusIcon className="h-4 w-4" strokeWidth={2.2} />
           Log Service Visit
         </Link>
         <Link
@@ -85,7 +108,7 @@ export default function UnitDetail() {
         ) : (
           <ul className="space-y-2">
             {unit.serviceLogs.map((log) => (
-              <li key={log.id} className="rounded-lg border border-gray-200 bg-white p-3 text-sm">
+              <li key={log.id} className="rounded-lg border border-gray-200 bg-white p-3 text-sm shadow-card">
                 <div className="flex justify-between">
                   <span className="font-medium">{new Date(log.serviceDate).toLocaleDateString()}</span>
                   {log.amountCharged && <span>${Number(log.amountCharged).toFixed(2)}</span>}

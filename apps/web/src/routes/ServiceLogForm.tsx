@@ -72,7 +72,7 @@ export default function ServiceLogForm() {
 
   return (
     <div className="space-y-4 max-w-lg">
-      <h1 className="text-xl font-semibold">Log Service Visit</h1>
+      <h1 className="text-xl font-extrabold tracking-tight">Log Service Visit</h1>
       {unit && (
         <p className="text-sm text-gray-500">
           {unit.customerName} — SN {unit.serialNumber}
@@ -109,7 +109,7 @@ export default function ServiceLogForm() {
         <button
           type="submit"
           disabled={isSubmitting || !online}
-          className="w-full rounded-lg bg-brand text-white text-sm font-medium px-4 py-2 hover:bg-brand-dark disabled:opacity-50"
+          className="w-full rounded-lg bg-brand text-white text-sm font-medium px-4 py-2 shadow-card hover:bg-brand-dark disabled:opacity-50"
         >
           {isSubmitting ? "Saving…" : "Save Visit"}
         </button>

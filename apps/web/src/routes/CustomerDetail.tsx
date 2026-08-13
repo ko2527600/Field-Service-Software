@@ -1,21 +1,27 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { deleteCustomer, getCustomer } from "../api/customers.js";
-import type { CustomerWithUnits } from "../api/types.js";
+import { listInvoices } from "../api/invoices.js";
+import type { CustomerWithUnits, Invoice } from "../api/types.js";
 import { UnitListItem } from "../components/UnitListItem.js";
+import { PhoneIcon, MailIcon, MapPinIcon, PlusIcon, InvoiceIcon, ChevronRightIcon } from "../components/icons/index.js";
 
 export default function CustomerDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [customer, setCustomer] = useState<CustomerWithUnits | null>(null);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   function reload() {
     if (!id) return;
     setLoading(true);
-    getCustomer(id)
-      .then(setCustomer)
+    Promise.all([getCustomer(id), listInvoices({ customerId: id })])
+      .then(([c, inv]) => {
+        setCustomer(c);
+        setInvoices(inv);
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }
@@ -36,7 +42,7 @@ export default function CustomerDetail() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold">{customer.name}</h1>
+          <h1 className="text-xl font-extrabold tracking-tight">{customer.name}</h1>
           <p className="text-sm text-gray-500">{customer.businessType || "—"}</p>
         </div>
         <div className="flex gap-2">
@@ -55,12 +61,23 @@ export default function CustomerDetail() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-gray-200 bg-white p-4 text-sm space-y-1">
-        {customer.contactPhone && <div>📞 {customer.contactPhone}</div>}
-        {customer.contactEmail && <div>✉️ {customer.contactEmail}</div>}
+      <div className="rounded-lg border border-gray-200 bg-white p-4 text-sm space-y-2 shadow-card">
+        {customer.contactPhone && (
+          <div className="flex items-center gap-2 text-gray-700">
+            <PhoneIcon className="h-4 w-4 text-gray-400 shrink-0" strokeWidth={1.8} />
+            {customer.contactPhone}
+          </div>
+        )}
+        {customer.contactEmail && (
+          <div className="flex items-center gap-2 text-gray-700">
+            <MailIcon className="h-4 w-4 text-gray-400 shrink-0" strokeWidth={1.8} />
+            {customer.contactEmail}
+          </div>
+        )}
         {(customer.addressLine1 || customer.city) && (
-          <div>
-            📍 {[customer.addressLine1, customer.addressLine2, customer.city, customer.state, customer.postalCode]
+          <div className="flex items-center gap-2 text-gray-700">
+            <MapPinIcon className="h-4 w-4 text-gray-400 shrink-0" strokeWidth={1.8} />
+            {[customer.addressLine1, customer.addressLine2, customer.city, customer.state, customer.postalCode]
               .filter(Boolean)
               .join(", ")}
           </div>
@@ -71,8 +88,12 @@ export default function CustomerDetail() {
       <div>
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-sm font-semibold text-gray-700">Extinguishers ({customer.units.length})</h2>
-          <Link to={`/customers/${customer.id}/units/new`} className="text-sm text-brand hover:underline">
-            + Add Unit
+          <Link
+            to={`/customers/${customer.id}/units/new`}
+            className="inline-flex items-center gap-1 text-sm text-brand hover:underline"
+          >
+            <PlusIcon className="h-3.5 w-3.5" strokeWidth={2.2} />
+            Add Unit
           </Link>
         </div>
         {customer.units.length === 0 ? (
@@ -81,6 +102,46 @@ export default function CustomerDetail() {
           <div className="space-y-2">
             {customer.units.map((unit) => (
               <UnitListItem key={unit.id} unit={unit} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-sm font-semibold text-gray-700">Invoices ({invoices.length})</h2>
+          <Link
+            to={`/customers/${customer.id}/invoices/new`}
+            className="inline-flex items-center gap-1 text-sm text-brand hover:underline"
+          >
+            <PlusIcon className="h-3.5 w-3.5" strokeWidth={2.2} />
+            New Invoice
+          </Link>
+        </div>
+        {invoices.length === 0 ? (
+          <p className="text-sm text-gray-500">No invoices yet.</p>
+        ) : (
+          <div className="space-y-2">
+            {invoices.map((invoice) => (
+              <Link
+                key={invoice.id}
+                to={`/invoices/${invoice.id}`}
+                className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white p-3 shadow-card hover:shadow-card-hover hover:border-brand-100"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <InvoiceIcon className="h-4 w-4 text-brand shrink-0" strokeWidth={1.8} />
+                  <div className="min-w-0">
+                    <div className="font-medium text-sm truncate">{invoice.invoiceNumber}</div>
+                    <div className="text-xs text-gray-400">
+                      {new Date(invoice.issueDate).toLocaleDateString()}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="font-medium text-sm">${Number(invoice.total).toFixed(2)}</span>
+                  <ChevronRightIcon className="h-4 w-4 text-gray-300" strokeWidth={2} />
+                </div>
+              </Link>
             ))}
           </div>
         )}

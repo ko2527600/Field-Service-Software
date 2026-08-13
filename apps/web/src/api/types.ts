@@ -61,3 +61,30 @@ export type DashboardSummary = {
   totalUnits: number;
   totalCustomers: number;
 };
+
+export type InvoiceLineItem = {
+  id: string;
+  invoiceId: string;
+  unitId: string | null;
+  description: string;
+  serviceType: string | null;
+  quantity: number;
+  unitPrice: string;
+  lineTotal: string;
+  unit?: Unit | null;
+};
+
+export type Invoice = {
+  id: string;
+  businessId: string;
+  customerId: string;
+  customer?: (Partial<Customer> & { name: string }) | null;
+  invoiceNumber: string;
+  issueDate: string;
+  dueDate: string | null;
+  notes: string | null;
+  subtotal: string;
+  total: string;
+  createdAt: string;
+  lineItems?: InvoiceLineItem[];
+};

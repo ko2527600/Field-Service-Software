@@ -5,28 +5,28 @@ import * as customersService from "../services/customers.service.js";
 
 export async function list(req: Request, res: Response) {
   const query = customerListQuerySchema.parse(req.query);
-  const customers = await customersService.listCustomers(query);
+  const customers = await customersService.listCustomers(req.businessId!, query);
   res.json(customers);
 }
 
 export async function get(req: Request, res: Response) {
-  const customer = await customersService.getCustomer(req.params.id!);
+  const customer = await customersService.getCustomer(req.businessId!, req.params.id!);
   res.json(customer);
 }
 
 export async function create(req: Request, res: Response) {
   const input = customerInputSchema.parse(req.body);
-  const customer = await customersService.createCustomer(input);
+  const customer = await customersService.createCustomer(req.businessId!, input);
   res.status(201).json(customer);
 }
 
 export async function update(req: Request, res: Response) {
   const input = customerInputSchema.partial().parse(req.body);
-  const customer = await customersService.updateCustomer(req.params.id!, input);
+  const customer = await customersService.updateCustomer(req.businessId!, req.params.id!, input);
   res.json(customer);
 }
 
 export async function remove(req: Request, res: Response) {
-  await customersService.archiveCustomer(req.params.id!);
+  await customersService.archiveCustomer(req.businessId!, req.params.id!);
   res.status(204).end();
 }

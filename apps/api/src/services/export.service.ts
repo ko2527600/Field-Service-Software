@@ -1,11 +1,9 @@
 import { UNIT_STATUS_LABELS } from "@firearmour/shared";
 import { prisma } from "../lib/prisma.js";
-import { getDefaultBusinessId } from "../lib/business.js";
 import { serializeUnit } from "./units.service.js";
 import { toCsv } from "../lib/csv.js";
 
-export async function exportUnitsCsv(): Promise<string> {
-  const businessId = await getDefaultBusinessId();
+export async function exportUnitsCsv(businessId: string): Promise<string> {
   const units = await prisma.unit.findMany({
     where: { archivedAt: null, customer: { businessId, archivedAt: null } },
     include: { customer: { select: { name: true, contactPhone: true, contactEmail: true } } },
@@ -44,8 +42,7 @@ export async function exportUnitsCsv(): Promise<string> {
   ]);
 }
 
-export async function exportCustomersCsv(): Promise<string> {
-  const businessId = await getDefaultBusinessId();
+export async function exportCustomersCsv(businessId: string): Promise<string> {
   const customers = await prisma.customer.findMany({
     where: { businessId, archivedAt: null },
     include: { units: { where: { archivedAt: null } } },
