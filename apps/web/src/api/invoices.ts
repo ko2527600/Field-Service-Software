@@ -1,5 +1,5 @@
 import type { CreateInvoiceInput } from "@firearmour/shared";
-import { api } from "./client.js";
+import { api, API_BASE } from "./client.js";
 import type { Invoice } from "./types.js";
 
 export function listInvoices(params?: { customerId?: string }) {
@@ -22,5 +22,5 @@ export function deleteInvoice(id: string) {
 }
 
 export function invoicePdfUrl(id: string) {
-  return `/api/v1/invoices/${id}/pdf`;
+  return `${API_BASE}/invoices/${id}/pdf`;
 }
