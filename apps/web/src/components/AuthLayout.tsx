@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { AuthHeroArt } from "./AuthHeroArt.js";
+import { AuthHeroSlideshow } from "./AuthHeroSlideshow.js";
 import { Logo } from "./Logo.js";
 
 export function AuthLayout({
@@ -15,7 +15,8 @@ export function AuthLayout({
     <div className="min-h-screen md:flex">
       {/* Hero panel: top banner on mobile, left half on desktop */}
       <div className="relative h-[46vh] min-h-[280px] md:h-screen md:min-h-0 md:w-1/2 overflow-hidden">
-        <AuthHeroArt className="absolute inset-0 h-full w-full" />
+        <AuthHeroSlideshow className="absolute inset-0 h-full w-full bg-gray-900" />
+        <div className="absolute inset-0 bg-black/50" />
         <div className="relative h-full flex flex-col justify-between p-6 md:p-12">
           <div className="flex items-center gap-2">
             <Logo className="h-8 w-8" />
