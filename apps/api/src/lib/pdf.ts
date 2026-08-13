@@ -36,7 +36,7 @@ export function streamInvoicePdf(res: Response, invoice: InvoiceForPdf) {
     [invoice.business.addressLine1, invoice.business.addressLine2].filter(Boolean).join(", "),
     [invoice.business.city, invoice.business.state, invoice.business.postalCode].filter(Boolean).join(", "),
     invoice.business.phone,
-    invoice.business.email,
+    [invoice.business.email, invoice.business.email2].filter(Boolean).join(" / "),
   ].filter(Boolean) as string[];
   let y = 74;
   for (const line of businessLines) {

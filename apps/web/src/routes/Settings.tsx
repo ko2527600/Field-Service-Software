@@ -3,20 +3,28 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { businessProfileInputSchema, type BusinessProfileInput } from "@firearmour/shared";
 import { getBusinessProfile, updateBusinessProfile } from "../api/business.js";
+import { runReminders, type ReminderRunResult } from "../api/reminders.js";
 import { FormField, inputClass } from "../components/FormField.js";
 import { SettingsIcon } from "../components/icons/index.js";
+import { ApiError } from "../api/client.js";
 
 export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [reminderRunning, setReminderRunning] = useState(false);
+  const [reminderResult, setReminderResult] = useState<ReminderRunResult | null>(null);
+  const [reminderError, setReminderError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<BusinessProfileInput>({ resolver: zodResolver(businessProfileInputSchema) });
+
+  const smsRemindersEnabled = watch("smsRemindersEnabled");
 
   useEffect(() => {
     getBusinessProfile()
@@ -30,6 +38,9 @@ export default function Settings() {
           postalCode: b.postalCode ?? "",
           phone: b.phone ?? "",
           email: b.email ?? "",
+          email2: b.email2 ?? "",
+          smsRemindersEnabled: b.smsRemindersEnabled,
+          smsReminderDaysBefore: b.smsReminderDaysBefore,
         }),
       )
       .finally(() => setLoading(false));
@@ -43,6 +54,19 @@ export default function Settings() {
       setSaved(true);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Something went wrong");
+    }
+  }
+
+  async function onRunRemindersNow() {
+    setReminderRunning(true);
+    setReminderError(null);
+    setReminderResult(null);
+    try {
+      setReminderResult(await runReminders());
+    } catch (err) {
+      setReminderError(err instanceof ApiError ? err.message : "Something went wrong");
+    } finally {
+      setReminderRunning(false);
     }
   }
 
@@ -70,6 +94,9 @@ export default function Settings() {
             <input className={inputClass} type="email" {...register("email")} />
           </FormField>
         </div>
+        <FormField label="Second email (optional)" error={errors.email2?.message}>
+          <input className={inputClass} type="email" {...register("email2")} />
+        </FormField>
         <FormField label="Address" error={errors.addressLine1?.message}>
           <input className={inputClass} {...register("addressLine1")} />
         </FormField>
@@ -88,6 +115,31 @@ export default function Settings() {
           </FormField>
         </div>
 
+        <div className="border-t border-gray-200 pt-4 space-y-3">
+          <div>
+            <h2 className="font-bold text-sm">SMS Renewal Reminders</h2>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Automatically text customers when their extinguisher is coming due. Requires an SMS gateway
+              phone connected on the backend.
+            </p>
+          </div>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" className="h-4 w-4 rounded border-gray-300 text-brand" {...register("smsRemindersEnabled")} />
+            <span className="text-sm font-medium text-gray-700">Send SMS reminders</span>
+          </label>
+          {smsRemindersEnabled && (
+            <FormField label="Days before renewal to send" error={errors.smsReminderDaysBefore?.message}>
+              <input
+                className={inputClass}
+                type="number"
+                min={1}
+                max={90}
+                {...register("smsReminderDaysBefore")}
+              />
+            </FormField>
+          )}
+        </div>
+
         {submitError && <p className="text-sm text-red-600">{submitError}</p>}
         {saved && <p className="text-sm text-success">Saved.</p>}
 
@@ -99,6 +151,32 @@ export default function Settings() {
           {isSubmitting ? "Saving…" : "Save Changes"}
         </button>
       </form>
+
+      {smsRemindersEnabled && (
+        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-card space-y-2">
+          <p className="text-sm font-medium">Test reminders</p>
+          <p className="text-xs text-gray-500">
+            Runs the reminder check immediately instead of waiting for the next automatic run.
+          </p>
+          <button
+            type="button"
+            onClick={onRunRemindersNow}
+            disabled={reminderRunning}
+            className="rounded-lg border border-gray-300 text-sm font-medium px-4 py-2 hover:border-brand-100 disabled:opacity-50"
+          >
+            {reminderRunning ? "Running…" : "Send reminders now"}
+          </button>
+          {reminderError && <p className="text-sm text-red-600">{reminderError}</p>}
+          {reminderResult && (
+            <p className="text-sm text-gray-600">
+              Checked {reminderResult.checked}, sent {reminderResult.sent}, failed {reminderResult.failed}.
+              {reminderResult.errors.length > 0 && (
+                <span className="block text-red-600 mt-1">{reminderResult.errors.join("; ")}</span>
+              )}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
