@@ -12,6 +12,7 @@ import serviceLogsRouter from "./routes/serviceLogs.routes.js";
 import dashboardRouter from "./routes/dashboard.routes.js";
 import exportRouter from "./routes/export.routes.js";
 import invoiceRouter from "./routes/invoice.routes.js";
+import remindersRouter from "./routes/reminders.routes.js";
 
 export function createApp() {
   const app = express();
@@ -30,6 +31,7 @@ export function createApp() {
   app.use("/api/v1/dashboard", requireAuth, dashboardRouter);
   app.use("/api/v1/export", requireAuth, exportRouter);
   app.use("/api/v1/invoices", requireAuth, invoiceRouter);
+  app.use("/api/v1/reminders", requireAuth, remindersRouter);
 
   app.use(errorHandler);
 

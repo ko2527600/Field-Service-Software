@@ -20,6 +20,8 @@ export async function updateBusinessProfile(businessId: string, input: BusinessP
       postalCode: input.postalCode || null,
       phone: input.phone || null,
       email: input.email || null,
+      smsRemindersEnabled: input.smsRemindersEnabled,
+      smsReminderDaysBefore: input.smsReminderDaysBefore,
     },
   });
 }

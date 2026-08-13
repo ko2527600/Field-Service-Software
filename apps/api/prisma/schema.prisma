@@ -18,6 +18,8 @@ model Business {
   phone        String?
   email        String?
   nextInvoiceSeq Int    @default(1)
+  smsRemindersEnabled   Boolean @default(false)
+  smsReminderDaysBefore Int     @default(7)
   createdAt    DateTime @default(now())
 
   customers Customer[]
@@ -99,6 +101,8 @@ model Unit {
   renewalDate        DateTime
   location           String?
   archivedAt         DateTime?
+
+  reminderSentForRenewalDate DateTime?
 
   createdAt          DateTime @default(now())
   updatedAt           DateTime @updatedAt

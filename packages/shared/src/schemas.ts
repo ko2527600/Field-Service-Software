@@ -74,6 +74,8 @@ export const businessProfileInputSchema = z.object({
   postalCode: z.string().trim().optional().or(z.literal("")),
   phone: z.string().trim().optional().or(z.literal("")),
   email: z.string().trim().email("Invalid email").optional().or(z.literal("")),
+  smsRemindersEnabled: z.coerce.boolean().default(false),
+  smsReminderDaysBefore: z.coerce.number().int().min(1, "Must be at least 1 day").max(90, "Must be 90 days or fewer"),
 });
 export type BusinessProfileInput = z.infer<typeof businessProfileInputSchema>;
 
