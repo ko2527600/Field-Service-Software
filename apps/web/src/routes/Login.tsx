@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginInputSchema, type LoginInput } from "@firearmour/shared";
 import { useAuth } from "../hooks/useAuth.js";
 import { FormField, inputClass } from "../components/FormField.js";
-import { Logo } from "../components/Logo.js";
+import { AuthLayout } from "../components/AuthLayout.js";
 import { ApiError } from "../api/client.js";
 
 export default function Login() {
@@ -32,14 +32,25 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="flex flex-col items-center gap-2">
-          <Logo className="h-14 w-14" />
+    <AuthLayout
+      headline={
+        <>
+          Protection
+          <br />
+          that never
+          <br />
+          expires.
+        </>
+      }
+      tagline="Fire Armour tracks every extinguisher and every renewal, so nothing slips past its date."
+    >
+      <div className="space-y-6">
+        <div>
           <h1 className="text-xl font-extrabold tracking-tight">Sign in to Fire Armour</h1>
+          <p className="text-sm text-gray-500 mt-1">Welcome back — enter your details to continue.</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white rounded-xl border border-gray-200 p-5 shadow-card">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <FormField label="Email" error={errors.email?.message}>
             <input className={inputClass} type="email" autoComplete="email" {...register("email")} />
           </FormField>
@@ -65,6 +76,6 @@ export default function Login() {
           </Link>
         </p>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

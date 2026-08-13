@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerInputSchema, type RegisterInput } from "@firearmour/shared";
 import { useAuth } from "../hooks/useAuth.js";
 import { FormField, inputClass } from "../components/FormField.js";
-import { Logo } from "../components/Logo.js";
+import { AuthLayout } from "../components/AuthLayout.js";
 import { ApiError } from "../api/client.js";
 
 export default function Register() {
@@ -30,17 +30,27 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="flex flex-col items-center gap-2">
-          <Logo className="h-14 w-14" />
+    <AuthLayout
+      headline={
+        <>
+          Every unit.
+          <br />
+          Every date.
+          <br />
+          Covered.
+        </>
+      }
+      tagline="Set up your business once — Fire Armour handles the rest, from first inspection to next renewal."
+    >
+      <div className="space-y-6">
+        <div>
           <h1 className="text-xl font-extrabold tracking-tight">Set up Fire Armour</h1>
-          <p className="text-sm text-gray-500 text-center">
+          <p className="text-sm text-gray-500 mt-1">
             Create the first account for your business. This is a one-time setup.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white rounded-xl border border-gray-200 p-5 shadow-card">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <FormField label="Business name" error={errors.businessName?.message}>
             <input className={inputClass} {...register("businessName")} />
           </FormField>
@@ -69,6 +79,6 @@ export default function Register() {
           </Link>
         </p>
       </div>
-    </div>
+    </AuthLayout>
   );
 }
