@@ -51,3 +51,45 @@ export const serviceLogInputSchema = z.object({
   nextDueDate: z.coerce.date(),
 });
 export type ServiceLogInput = z.infer<typeof serviceLogInputSchema>;
+
+export const registerInputSchema = z.object({
+  businessName: z.string().trim().min(1, "Business name is required"),
+  email: z.string().trim().email("Invalid email"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+export type RegisterInput = z.infer<typeof registerInputSchema>;
+
+export const loginInputSchema = z.object({
+  email: z.string().trim().email("Invalid email"),
+  password: z.string().min(1, "Password is required"),
+});
+export type LoginInput = z.infer<typeof loginInputSchema>;
+
+export const businessProfileInputSchema = z.object({
+  name: z.string().trim().min(1, "Business name is required"),
+  addressLine1: z.string().trim().optional().or(z.literal("")),
+  addressLine2: z.string().trim().optional().or(z.literal("")),
+  city: z.string().trim().optional().or(z.literal("")),
+  state: z.string().trim().optional().or(z.literal("")),
+  postalCode: z.string().trim().optional().or(z.literal("")),
+  phone: z.string().trim().optional().or(z.literal("")),
+  email: z.string().trim().email("Invalid email").optional().or(z.literal("")),
+});
+export type BusinessProfileInput = z.infer<typeof businessProfileInputSchema>;
+
+export const invoiceLineItemInputSchema = z.object({
+  description: z.string().trim().min(1, "Description is required"),
+  unitId: z.string().trim().optional().or(z.literal("")),
+  serviceType: z.string().trim().optional().or(z.literal("")),
+  quantity: z.coerce.number().int().positive().default(1),
+  unitPrice: z.coerce.number().nonnegative(),
+});
+export type InvoiceLineItemInput = z.infer<typeof invoiceLineItemInputSchema>;
+
+export const createInvoiceSchema = z.object({
+  customerId: z.string().trim().min(1, "Customer is required"),
+  dueDate: z.preprocess((val) => (val === "" ? undefined : val), z.coerce.date().optional()),
+  notes: z.string().trim().optional().or(z.literal("")),
+  lineItems: z.array(invoiceLineItemInputSchema).min(1, "Add at least one line item"),
+});
+export type CreateInvoiceInput = z.infer<typeof createInvoiceSchema>;

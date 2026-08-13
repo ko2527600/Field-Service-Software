@@ -1,14 +1,16 @@
 import { useOnlineStatus } from "../hooks/useOnlineStatus.js";
+import { DownloadIcon, InvoiceIcon, CustomersIcon } from "../components/icons/index.js";
 
 export default function Export() {
   const online = useOnlineStatus();
 
   return (
     <div className="space-y-4 max-w-lg">
-      <h1 className="text-xl font-semibold">Export</h1>
-      <p className="text-sm text-gray-500">
-        Download your data as a CSV any time — no paywalls, no lock-in.
-      </p>
+      <div className="flex items-center gap-2">
+        <DownloadIcon className="h-6 w-6 text-brand" strokeWidth={1.8} />
+        <h1 className="text-xl font-extrabold tracking-tight">Export</h1>
+      </div>
+      <p className="text-sm text-gray-500">Download your data as a CSV any time — no paywalls, no lock-in.</p>
 
       {!online && <p className="text-sm text-amber-700">You're offline — reconnect to export.</p>}
 
@@ -16,24 +18,30 @@ export default function Export() {
         <a
           href="/api/v1/export/units.csv"
           download
-          className={`block rounded-lg border border-gray-200 bg-white p-4 hover:border-brand ${
+          className={`flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-card hover:border-brand-100 hover:shadow-card-hover ${
             !online ? "pointer-events-none opacity-50" : ""
           }`}
         >
-          <div className="font-medium">Extinguishers &amp; Status</div>
-          <div className="text-sm text-gray-500">
-            Every unit with customer contact info, renewal date, and current status.
+          <InvoiceIcon className="h-6 w-6 text-brand shrink-0" strokeWidth={1.6} />
+          <div>
+            <div className="font-medium">Extinguishers &amp; Status</div>
+            <div className="text-sm text-gray-500">
+              Every unit with customer contact info, renewal date, and current status.
+            </div>
           </div>
         </a>
         <a
           href="/api/v1/export/customers.csv"
           download
-          className={`block rounded-lg border border-gray-200 bg-white p-4 hover:border-brand ${
+          className={`flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-card hover:border-brand-100 hover:shadow-card-hover ${
             !online ? "pointer-events-none opacity-50" : ""
           }`}
         >
-          <div className="font-medium">Customers</div>
-          <div className="text-sm text-gray-500">Contact details, location, and unit counts per customer.</div>
+          <CustomersIcon className="h-6 w-6 text-brand shrink-0" strokeWidth={1.6} />
+          <div>
+            <div className="font-medium">Customers</div>
+            <div className="text-sm text-gray-500">Contact details, location, and unit counts per customer.</div>
+          </div>
         </a>
       </div>
     </div>

@@ -85,7 +85,7 @@ export default function UnitForm() {
 
   return (
     <div className="space-y-4 max-w-lg">
-      <h1 className="text-xl font-semibold">{isEdit ? "Edit Extinguisher" : "Add Extinguisher"}</h1>
+      <h1 className="text-xl font-extrabold tracking-tight">{isEdit ? "Edit Extinguisher" : "Add Extinguisher"}</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <FormField label="Type" error={errors.type?.message}>
           <select className={inputClass} {...register("type")}>
@@ -136,7 +136,7 @@ export default function UnitForm() {
         <button
           type="submit"
           disabled={isSubmitting || !online}
-          className="w-full rounded-lg bg-brand text-white text-sm font-medium px-4 py-2 hover:bg-brand-dark disabled:opacity-50"
+          className="w-full rounded-lg bg-brand text-white text-sm font-medium px-4 py-2 shadow-card hover:bg-brand-dark disabled:opacity-50"
         >
           {isSubmitting ? "Saving…" : isEdit ? "Save Changes" : "Add Extinguisher"}
         </button>

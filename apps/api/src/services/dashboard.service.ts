@@ -1,11 +1,8 @@
 import { getUnitStatus } from "@firearmour/shared";
 import { prisma } from "../lib/prisma.js";
-import { getDefaultBusinessId } from "../lib/business.js";
 import { serializeUnit } from "./units.service.js";
 
-export async function getSummary() {
-  const businessId = await getDefaultBusinessId();
-
+export async function getSummary(businessId: string) {
   const [units, totalCustomers] = await Promise.all([
     prisma.unit.findMany({
       where: { archivedAt: null, customer: { businessId, archivedAt: null } },
@@ -29,9 +26,7 @@ export async function getSummary() {
   };
 }
 
-export async function getPriorityList(limit = 50) {
-  const businessId = await getDefaultBusinessId();
-
+export async function getPriorityList(businessId: string, limit = 50) {
   const units = await prisma.unit.findMany({
     where: { archivedAt: null, customer: { businessId, archivedAt: null } },
     include: { customer: { select: { name: true } } },

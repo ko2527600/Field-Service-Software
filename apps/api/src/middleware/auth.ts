@@ -1,10 +1,25 @@
 import type { NextFunction, Request, Response } from "express";
+import { SESSION_COOKIE_NAME, verifySessionToken } from "../lib/auth.js";
 
-/**
- * No-op today (single-business usage, no login in this phase). Kept as a
- * real middleware in the request pipeline so multi-tenant auth can be
- * dropped in later without restructuring routes.
- */
-export function requireAuth(_req: Request, _res: Response, next: NextFunction): void {
+declare global {
+  namespace Express {
+    interface Request {
+      businessId?: string;
+      userId?: string;
+    }
+  }
+}
+
+export function requireAuth(req: Request, res: Response, next: NextFunction): void {
+  const token = req.cookies?.[SESSION_COOKIE_NAME];
+  const session = token ? verifySessionToken(token) : null;
+
+  if (!session) {
+    res.status(401).json({ error: "Not authenticated" });
+    return;
+  }
+
+  req.businessId = session.businessId;
+  req.userId = session.userId;
   next();
 }

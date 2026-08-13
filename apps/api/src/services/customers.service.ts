@@ -1,6 +1,5 @@
 import type { CustomerInput } from "@firearmour/shared";
 import { prisma } from "../lib/prisma.js";
-import { getDefaultBusinessId } from "../lib/business.js";
 import { HttpError } from "../middleware/errorHandler.js";
 import { serializeUnit } from "./units.service.js";
 
@@ -9,9 +8,7 @@ export type CustomerListOptions = {
   sort?: "name:asc" | "name:desc" | "createdAt:desc";
 };
 
-export async function listCustomers(options: CustomerListOptions) {
-  const businessId = await getDefaultBusinessId();
-
+export async function listCustomers(businessId: string, options: CustomerListOptions) {
   const orderBy =
     options.sort === "name:desc"
       ? { name: "desc" as const }
@@ -38,7 +35,7 @@ export async function listCustomers(options: CustomerListOptions) {
   }));
 }
 
-export async function getCustomer(id: string) {
+export async function getCustomer(businessId: string, id: string) {
   const customer = await prisma.customer.findUnique({
     where: { id },
     include: {
@@ -48,7 +45,9 @@ export async function getCustomer(id: string) {
       },
     },
   });
-  if (!customer || customer.archivedAt) throw new HttpError(404, "Customer not found");
+  if (!customer || customer.archivedAt || customer.businessId !== businessId) {
+    throw new HttpError(404, "Customer not found");
+  }
 
   return {
     ...customer,
@@ -56,8 +55,7 @@ export async function getCustomer(id: string) {
   };
 }
 
-export async function createCustomer(input: CustomerInput) {
-  const businessId = await getDefaultBusinessId();
+export async function createCustomer(businessId: string, input: CustomerInput) {
   return prisma.customer.create({
     data: {
       businessId,
@@ -75,9 +73,11 @@ export async function createCustomer(input: CustomerInput) {
   });
 }
 
-export async function updateCustomer(id: string, input: Partial<CustomerInput>) {
+export async function updateCustomer(businessId: string, id: string, input: Partial<CustomerInput>) {
   const existing = await prisma.customer.findUnique({ where: { id } });
-  if (!existing || existing.archivedAt) throw new HttpError(404, "Customer not found");
+  if (!existing || existing.archivedAt || existing.businessId !== businessId) {
+    throw new HttpError(404, "Customer not found");
+  }
 
   return prisma.customer.update({
     where: { id },
@@ -96,8 +96,10 @@ export async function updateCustomer(id: string, input: Partial<CustomerInput>) 
   });
 }
 
-export async function archiveCustomer(id: string) {
+export async function archiveCustomer(businessId: string, id: string) {
   const existing = await prisma.customer.findUnique({ where: { id } });
-  if (!existing || existing.archivedAt) throw new HttpError(404, "Customer not found");
+  if (!existing || existing.archivedAt || existing.businessId !== businessId) {
+    throw new HttpError(404, "Customer not found");
+  }
   await prisma.customer.update({ where: { id }, data: { archivedAt: new Date() } });
 }

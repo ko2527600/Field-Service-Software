@@ -21,11 +21,12 @@ export type UnitListFilters = {
   sort?: "renewalDate:asc" | "renewalDate:desc";
 };
 
-export async function listUnits(filters: UnitListFilters) {
+export async function listUnits(businessId: string, filters: UnitListFilters) {
   const units = await prisma.unit.findMany({
     where: {
       archivedAt: null,
       customerId: filters.customerId,
+      customer: { businessId },
     },
     include: { customer: { select: { name: true } } },
     orderBy: { renewalDate: filters.sort === "renewalDate:desc" ? "desc" : "asc" },
@@ -38,21 +39,25 @@ export async function listUnits(filters: UnitListFilters) {
   return serialized;
 }
 
-export async function getUnit(id: string) {
+export async function getUnit(businessId: string, id: string) {
   const unit = await prisma.unit.findUnique({
     where: { id },
     include: {
-      customer: { select: { name: true } },
+      customer: { select: { name: true, businessId: true } },
       serviceLogs: { orderBy: { serviceDate: "desc" } },
     },
   });
-  if (!unit || unit.archivedAt) throw new HttpError(404, "Unit not found");
+  if (!unit || unit.archivedAt || unit.customer?.businessId !== businessId) {
+    throw new HttpError(404, "Unit not found");
+  }
   return serializeUnit(unit);
 }
 
-export async function createUnit(customerId: string, input: UnitInput) {
+export async function createUnit(businessId: string, customerId: string, input: UnitInput) {
   const customer = await prisma.customer.findUnique({ where: { id: customerId } });
-  if (!customer || customer.archivedAt) throw new HttpError(404, "Customer not found");
+  if (!customer || customer.archivedAt || customer.businessId !== businessId) {
+    throw new HttpError(404, "Customer not found");
+  }
 
   const renewalDate = computeNextRenewalDate(
     input.installDate,
@@ -77,9 +82,11 @@ export async function createUnit(customerId: string, input: UnitInput) {
   return serializeUnit(unit);
 }
 
-export async function updateUnit(id: string, input: UnitUpdateInput) {
-  const existing = await prisma.unit.findUnique({ where: { id } });
-  if (!existing || existing.archivedAt) throw new HttpError(404, "Unit not found");
+export async function updateUnit(businessId: string, id: string, input: UnitUpdateInput) {
+  const existing = await prisma.unit.findUnique({ where: { id }, include: { customer: true } });
+  if (!existing || existing.archivedAt || existing.customer.businessId !== businessId) {
+    throw new HttpError(404, "Unit not found");
+  }
 
   const unit = await prisma.unit.update({
     where: { id },
@@ -98,8 +105,10 @@ export async function updateUnit(id: string, input: UnitUpdateInput) {
   return serializeUnit(unit);
 }
 
-export async function archiveUnit(id: string) {
-  const existing = await prisma.unit.findUnique({ where: { id } });
-  if (!existing || existing.archivedAt) throw new HttpError(404, "Unit not found");
+export async function archiveUnit(businessId: string, id: string) {
+  const existing = await prisma.unit.findUnique({ where: { id }, include: { customer: true } });
+  if (!existing || existing.archivedAt || existing.customer.businessId !== businessId) {
+    throw new HttpError(404, "Unit not found");
+  }
   await prisma.unit.update({ where: { id }, data: { archivedAt: new Date() } });
 }

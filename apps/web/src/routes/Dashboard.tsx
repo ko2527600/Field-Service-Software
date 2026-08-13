@@ -4,6 +4,9 @@ import { getSummary, getPriorityList } from "../api/dashboard.js";
 import type { DashboardSummary, Unit } from "../api/types.js";
 import { DashboardSummaryCards } from "../components/DashboardSummaryCards.js";
 import { UnitListItem } from "../components/UnitListItem.js";
+import { HeroBanner } from "../components/HeroBanner.js";
+import { FooterBand } from "../components/FooterBand.js";
+import { PlusIcon } from "../components/icons/index.js";
 
 export default function Dashboard() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
@@ -25,9 +28,11 @@ export default function Dashboard() {
   if (error) return <p className="text-red-600">{error}</p>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      <HeroBanner />
+
       <div>
-        <h1 className="text-xl font-semibold mb-3">Dashboard</h1>
+        <h1 className="text-xl font-extrabold tracking-tight mb-3">Dashboard</h1>
         {summary && <DashboardSummaryCards summary={summary} />}
       </div>
 
@@ -51,10 +56,13 @@ export default function Dashboard() {
 
       <Link
         to="/customers/new"
-        className="inline-flex items-center justify-center rounded-lg bg-brand text-white text-sm font-medium px-4 py-2 hover:bg-brand-dark"
+        className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-brand text-white text-sm font-medium px-4 py-2 shadow-card hover:bg-brand-dark"
       >
-        + Add Customer
+        <PlusIcon className="h-4 w-4" strokeWidth={2.2} />
+        Add Customer
       </Link>
+
+      <FooterBand />
     </div>
   );
 }
