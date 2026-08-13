@@ -4,7 +4,7 @@ import * as exportController from "../controllers/export.controller.js";
 
 const router = Router();
 
-router.get("/customers.csv", asyncHandler(exportController.customersCsv));
-router.get("/units.csv", asyncHandler(exportController.unitsCsv));
+router.get("/customers.pdf", asyncHandler(exportController.customersPdf));
+router.get("/units.pdf", asyncHandler(exportController.unitsPdf));
 
 export default router;

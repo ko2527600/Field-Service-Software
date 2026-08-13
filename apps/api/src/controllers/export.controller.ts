@@ -1,18 +1,20 @@
 import type { Request, Response } from "express";
 import * as exportService from "../services/export.service.js";
+import * as businessService from "../services/business.service.js";
+import { streamCustomersPdf, streamUnitsPdf } from "../lib/exportPdf.js";
 
-export async function customersCsv(req: Request, res: Response) {
-  const csv = await exportService.exportCustomersCsv(req.businessId!);
-  const date = new Date().toISOString().slice(0, 10);
-  res.setHeader("Content-Type", "text/csv");
-  res.setHeader("Content-Disposition", `attachment; filename="firearmour-customers-${date}.csv"`);
-  res.send(csv);
+export async function customersPdf(req: Request, res: Response) {
+  const [business, rows] = await Promise.all([
+    businessService.getBusinessProfile(req.businessId!),
+    exportService.getCustomersExportRows(req.businessId!),
+  ]);
+  streamCustomersPdf(res, business.name, rows);
 }
 
-export async function unitsCsv(req: Request, res: Response) {
-  const csv = await exportService.exportUnitsCsv(req.businessId!);
-  const date = new Date().toISOString().slice(0, 10);
-  res.setHeader("Content-Type", "text/csv");
-  res.setHeader("Content-Disposition", `attachment; filename="firearmour-units-${date}.csv"`);
-  res.send(csv);
+export async function unitsPdf(req: Request, res: Response) {
+  const [business, rows] = await Promise.all([
+    businessService.getBusinessProfile(req.businessId!),
+    exportService.getUnitsExportRows(req.businessId!),
+  ]);
+  streamUnitsPdf(res, business.name, rows);
 }
