@@ -1,6 +1,6 @@
-# Fire Armour — Customer & Renewal Tracker
+# Field-Service-Software
 
-A mobile-first Progressive Web App for fire extinguisher sales & servicing businesses to track customers, the extinguishers/units they own, renewal status, and service history — installable on phone and desktop from the same codebase.
+A mobile-first Progressive Web App and REST API platform for field service, equipment inspection, customer site tracking, renewal monitoring, and maintenance servicing businesses.
 
 ## Stack
 
