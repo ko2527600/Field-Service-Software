@@ -107,15 +107,25 @@ export default function CustomerDetail() {
       <div>
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-sm font-semibold text-gray-700">Extinguishers ({customer.units.length})</h2>
-          {isAdmin && (
-            <Link
-              to={`/customers/${customer.id}/units/new`}
-              className="inline-flex items-center gap-1 text-sm text-brand hover:underline"
-            >
-              <PlusIcon className="h-3.5 w-3.5" strokeWidth={2.2} />
-              Add Unit
-            </Link>
-          )}
+          <div className="flex items-center gap-3">
+            {customer.units.length > 0 && (
+              <Link
+                to={`/customers/${customer.id}/labels`}
+                className="inline-flex items-center gap-1 text-sm text-brand hover:underline"
+              >
+                Print Labels
+              </Link>
+            )}
+            {isAdmin && (
+              <Link
+                to={`/customers/${customer.id}/units/new`}
+                className="inline-flex items-center gap-1 text-sm text-brand hover:underline"
+              >
+                <PlusIcon className="h-3.5 w-3.5" strokeWidth={2.2} />
+                Add Unit
+              </Link>
+            )}
+          </div>
         </div>
         {customer.units.length === 0 ? (
           <p className="text-sm text-gray-500">No units recorded yet.</p>

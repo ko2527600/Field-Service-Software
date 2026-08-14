@@ -95,9 +95,14 @@ export default function UnitDetail() {
       {qrDataUrl && (
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-card flex items-center gap-4">
           <img src={qrDataUrl} alt="Scannable QR code for this extinguisher" className="h-24 w-24" />
-          <div className="text-sm text-gray-500">
-            Print and affix this QR code to the unit. Technicians can scan it in the field to pull up this
-            record instantly.
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-gray-500">
+              Print and affix this QR code to the unit. Technicians can scan it in the field to pull up this
+              record instantly.
+            </p>
+            <Link to={`/units/${unit.id}/label`} className="inline-block mt-1 text-sm text-brand hover:underline">
+              Print Label →
+            </Link>
           </div>
         </div>
       )}

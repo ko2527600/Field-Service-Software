@@ -15,6 +15,8 @@ const CustomerDetail = lazy(() => import("./routes/CustomerDetail.js"));
 const CustomerForm = lazy(() => import("./routes/CustomerForm.js"));
 const UnitForm = lazy(() => import("./routes/UnitForm.js"));
 const UnitDetail = lazy(() => import("./routes/UnitDetail.js"));
+const UnitLabel = lazy(() => import("./routes/UnitLabel.js"));
+const CustomerLabels = lazy(() => import("./routes/CustomerLabels.js"));
 const ServiceLogForm = lazy(() => import("./routes/ServiceLogForm.js"));
 const PriorityList = lazy(() => import("./routes/PriorityList.js"));
 const Analytics = lazy(() => import("./routes/Analytics.js"));
@@ -36,6 +38,10 @@ export default function App() {
 
           <Route element={<RequireAuth />}>
             <Route element={<RequireStaffRole />}>
+              {/* Standalone print views -- deliberately outside <Layout> so there's no nav chrome to print. */}
+              <Route path="/units/:id/label" element={<UnitLabel />} />
+              <Route path="/customers/:id/labels" element={<CustomerLabels />} />
+
               <Route element={<Layout />}>
                 {/* ADMIN + TECHNICIAN: the day-to-day field-service surface */}
                 <Route path="/" element={<Dashboard />} />
