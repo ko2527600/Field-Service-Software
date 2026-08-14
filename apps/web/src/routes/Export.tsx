@@ -1,5 +1,5 @@
 import { useOnlineStatus } from "../hooks/useOnlineStatus.js";
-import { DownloadIcon, InvoiceIcon, CustomersIcon } from "../components/icons/index.js";
+import { DownloadIcon, InvoiceIcon, CustomersIcon, ShieldIcon } from "../components/icons/index.js";
 import { API_BASE } from "../api/client.js";
 
 export default function Export() {
@@ -16,6 +16,22 @@ export default function Export() {
       {!online && <p className="text-sm text-amber-700">You're offline — reconnect to export.</p>}
 
       <div className="space-y-3">
+        <a
+          href={`${API_BASE}/export/afcas.csv`}
+          download
+          className={`flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-card hover:border-brand-100 hover:shadow-card-hover ${
+            !online ? "pointer-events-none opacity-50" : ""
+          }`}
+        >
+          <ShieldIcon className="h-6 w-6 text-brand shrink-0" strokeWidth={1.6} />
+          <div>
+            <div className="font-medium">AFCAS-Ready Export (CSV)</div>
+            <div className="text-sm text-gray-500">
+              Client name, location, type, serial, install/service/expiry dates — formatted for government
+              compliance portals.
+            </div>
+          </div>
+        </a>
         <a
           href={`${API_BASE}/export/units.pdf`}
           download
