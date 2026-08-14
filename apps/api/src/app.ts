@@ -14,6 +14,7 @@ import exportRouter from "./routes/export.routes.js";
 import invoiceRouter from "./routes/invoice.routes.js";
 import remindersRouter from "./routes/reminders.routes.js";
 import portalRouter from "./routes/portal.routes.js";
+import webhooksRouter from "./routes/webhooks.routes.js";
 
 export function createApp() {
   const app = express();
@@ -34,6 +35,7 @@ export function createApp() {
   app.use("/api/v1/invoices", requireAuth, requireAdmin, invoiceRouter);
   app.use("/api/v1/reminders", requireAuth, requireAdmin, remindersRouter);
   app.use("/api/v1/portal", requireAuth, requirePortalAccess, portalRouter);
+  app.use("/api/v1/webhooks", webhooksRouter);
 
   app.use(errorHandler);
 

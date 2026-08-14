@@ -77,6 +77,8 @@ export type InvoiceLineItem = {
   unit?: Unit | null;
 };
 
+export type PaymentStatus = "UNPAID" | "PAID";
+
 export type Invoice = {
   id: string;
   businessId: string;
@@ -88,6 +90,9 @@ export type Invoice = {
   notes: string | null;
   subtotal: string;
   total: string;
+  paymentStatus: PaymentStatus;
+  paymentLink: string | null;
+  paidAt: string | null;
   createdAt: string;
   lineItems?: InvoiceLineItem[];
 };

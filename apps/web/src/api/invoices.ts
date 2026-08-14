@@ -24,3 +24,7 @@ export function deleteInvoice(id: string) {
 export function invoicePdfUrl(id: string) {
   return `${API_BASE}/invoices/${id}/pdf`;
 }
+
+export function createPaymentLink(id: string) {
+  return api.post<Invoice>(`/invoices/${id}/payment-link`, {});
+}

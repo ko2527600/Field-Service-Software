@@ -1,6 +1,7 @@
 import type { CreateInvoiceInput } from "@firearmour/shared";
 import { prisma } from "../lib/prisma.js";
 import { HttpError } from "../middleware/errorHandler.js";
+import { createPaymentLink } from "../lib/hubtelPayments.js";
 
 const invoiceInclude = {
   business: true,
@@ -88,4 +89,50 @@ export async function deleteInvoice(businessId: string, id: string) {
     throw new HttpError(404, "Invoice not found");
   }
   await prisma.invoice.delete({ where: { id } });
+}
+
+/**
+ * Generates (or regenerates) a Hubtel MoMo/card payment link for an invoice.
+ * This is a deliberate admin action rather than something invoked automatically
+ * on invoice creation, since Hubtel credentials may not be configured.
+ */
+export async function generatePaymentLink(businessId: string, id: string) {
+  const invoice = await getInvoice(businessId, id);
+
+  const apiPublicUrl = (process.env.API_PUBLIC_URL ?? "http://localhost:4000").replace(/\/$/, "");
+  const webPublicUrl = (process.env.CORS_ORIGIN ?? "http://localhost:5173").split(",")[0]!.replace(/\/$/, "");
+
+  const result = await createPaymentLink({
+    clientReference: invoice.invoiceNumber,
+    totalAmount: Number(invoice.total),
+    description: `Invoice ${invoice.invoiceNumber} - ${invoice.business.name}`,
+    callbackUrl: `${apiPublicUrl}/api/v1/webhooks/hubtel`,
+    returnUrl: `${webPublicUrl}/invoices/${invoice.id}`,
+  });
+
+  if (!result.ok) {
+    throw new HttpError(502, result.error);
+  }
+
+  return prisma.invoice.update({
+    where: { id },
+    data: { paymentLink: result.checkoutUrl },
+    include: invoiceInclude,
+  });
+}
+
+/**
+ * Marks the invoice matching a Hubtel clientReference (== our invoiceNumber)
+ * as paid. Idempotent: a webhook Hubtel retries after a slow/failed response
+ * is a no-op the second time, since we never revert an already-paid invoice.
+ */
+export async function markInvoicePaidByReference(clientReference: string, transactionId?: string) {
+  const invoice = await prisma.invoice.findUnique({ where: { invoiceNumber: clientReference } });
+  if (!invoice) return null;
+  if (invoice.paymentStatus === "PAID") return invoice;
+
+  return prisma.invoice.update({
+    where: { id: invoice.id },
+    data: { paymentStatus: "PAID", paidAt: new Date(), hubtelTransactionId: transactionId ?? null },
+  });
 }
