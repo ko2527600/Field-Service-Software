@@ -51,6 +51,9 @@ export type ServiceLog = {
   amountCharged: string | null;
   notes: string | null;
   nextDueDate: string;
+  latitude: number | null;
+  longitude: number | null;
+  locationCapturedAt: string | null;
   createdAt: string;
 };
 
@@ -60,6 +63,12 @@ export type DashboardSummary = {
   expiredCount: number;
   totalUnits: number;
   totalCustomers: number;
+};
+
+export type DashboardAnalytics = {
+  statusBreakdown: { ACTIVE: number; DUE_SOON: number; EXPIRED: number };
+  upcomingRenewals: { month: string; dueCount: number; estimatedRevenue: number }[];
+  actualRevenue: { month: string; revenue: number }[];
 };
 
 export type InvoiceLineItem = {
@@ -74,6 +83,8 @@ export type InvoiceLineItem = {
   unit?: Unit | null;
 };
 
+export type PaymentStatus = "UNPAID" | "PAID";
+
 export type Invoice = {
   id: string;
   businessId: string;
@@ -85,6 +96,9 @@ export type Invoice = {
   notes: string | null;
   subtotal: string;
   total: string;
+  paymentStatus: PaymentStatus;
+  paymentLink: string | null;
+  paidAt: string | null;
   createdAt: string;
   lineItems?: InvoiceLineItem[];
 };

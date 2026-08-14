@@ -15,6 +15,10 @@ export function getUnit(id: string) {
   return api.get<UnitWithLogs>(`/units/${id}`);
 }
 
+export function getUnitBySerial(serial: string) {
+  return api.get<UnitWithLogs>(`/units/lookup?serial=${encodeURIComponent(serial)}`);
+}
+
 export function createUnit(customerId: string, input: UnitInput) {
   return api.post<Unit>(`/customers/${customerId}/units`, input);
 }

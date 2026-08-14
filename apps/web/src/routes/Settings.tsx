@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { businessProfileInputSchema, type BusinessProfileInput } from "@firearmour/shared";
+import { businessProfileInputSchema, SMS_GATEWAYS, SMS_GATEWAY_LABELS, type BusinessProfileInput } from "@firearmour/shared";
 import { getBusinessProfile, updateBusinessProfile } from "../api/business.js";
 import { runReminders, type ReminderRunResult } from "../api/reminders.js";
 import { FormField, inputClass } from "../components/FormField.js";
 import { SettingsIcon } from "../components/icons/index.js";
+import { StaffAccessPanel } from "../components/StaffAccessPanel.js";
 import { ApiError } from "../api/client.js";
 
 export default function Settings() {
@@ -41,6 +42,7 @@ export default function Settings() {
           email2: b.email2 ?? "",
           smsRemindersEnabled: b.smsRemindersEnabled,
           smsReminderDaysBefore: b.smsReminderDaysBefore,
+          smsGateway: b.smsGateway,
         }),
       )
       .finally(() => setLoading(false));
@@ -128,15 +130,26 @@ export default function Settings() {
             <span className="text-sm font-medium text-gray-700">Send SMS reminders</span>
           </label>
           {smsRemindersEnabled && (
-            <FormField label="Days before renewal to send" error={errors.smsReminderDaysBefore?.message}>
-              <input
-                className={inputClass}
-                type="number"
-                min={1}
-                max={90}
-                {...register("smsReminderDaysBefore")}
-              />
-            </FormField>
+            <>
+              <FormField label="Days before renewal to send" error={errors.smsReminderDaysBefore?.message}>
+                <input
+                  className={inputClass}
+                  type="number"
+                  min={1}
+                  max={90}
+                  {...register("smsReminderDaysBefore")}
+                />
+              </FormField>
+              <FormField label="SMS gateway" error={errors.smsGateway?.message}>
+                <select className={inputClass} {...register("smsGateway")}>
+                  {SMS_GATEWAYS.map((gateway) => (
+                    <option key={gateway} value={gateway}>
+                      {SMS_GATEWAY_LABELS[gateway]}
+                    </option>
+                  ))}
+                </select>
+              </FormField>
+            </>
           )}
         </div>
 
@@ -177,6 +190,8 @@ export default function Settings() {
           )}
         </div>
       )}
+
+      <StaffAccessPanel />
     </div>
   );
 }

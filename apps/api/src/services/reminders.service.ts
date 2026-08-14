@@ -1,6 +1,12 @@
 import { EXTINGUISHER_TYPE_LABELS } from "@firearmour/shared";
+import type { SmsGateway } from "@prisma/client";
 import { prisma } from "../lib/prisma.js";
-import { sendSms } from "../lib/smsGateway.js";
+import { sendSms as sendSmsViaCapcom6 } from "../lib/smsGateway.js";
+import { sendSms as sendSmsViaHubtel } from "../lib/hubtelSms.js";
+
+export function sendSmsVia(gateway: SmsGateway, phone: string, text: string) {
+  return gateway === "HUBTEL" ? sendSmsViaHubtel(phone, text) : sendSmsViaCapcom6(phone, text);
+}
 
 function startOfDayUTC(d: Date): Date {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
@@ -62,7 +68,7 @@ export async function sendDueRenewalReminders(businessId?: string): Promise<Remi
       if (!phone) continue;
 
       const text = buildReminderText(business.name, business.phone, unit.customer.name, unit);
-      const sendResult = await sendSms(phone, text);
+      const sendResult = await sendSmsVia(business.smsGateway, phone, text);
 
       if (sendResult.ok) {
         result.sent += 1;

@@ -6,8 +6,11 @@ import { InstallPromptButton } from "./InstallPromptButton.js";
 import { Logo } from "./Logo.js";
 import { LogoutButton } from "./LogoutButton.js";
 import { SettingsIcon } from "./icons/index.js";
+import { useAuth } from "../hooks/useAuth.js";
 
 export function Layout() {
+  const { user } = useAuth();
+
   return (
     <div className="md:flex min-h-screen bg-gray-50">
       <SideNav />
@@ -20,13 +23,15 @@ export function Layout() {
           </div>
           <div className="flex items-center gap-1">
             <InstallPromptButton />
-            <Link
-              to="/settings"
-              className="flex items-center justify-center h-8 w-8 rounded-lg text-gray-500 hover:bg-gray-100"
-              aria-label="Settings"
-            >
-              <SettingsIcon className="h-5 w-5" strokeWidth={1.8} />
-            </Link>
+            {user?.role === "ADMIN" && (
+              <Link
+                to="/settings"
+                className="flex items-center justify-center h-8 w-8 rounded-lg text-gray-500 hover:bg-gray-100"
+                aria-label="Settings"
+              >
+                <SettingsIcon className="h-5 w-5" strokeWidth={1.8} />
+              </Link>
+            )}
             <LogoutButton compact />
           </div>
         </header>

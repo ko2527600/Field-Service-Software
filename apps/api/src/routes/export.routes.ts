@@ -6,5 +6,6 @@ const router = Router();
 
 router.get("/customers.pdf", asyncHandler(exportController.customersPdf));
 router.get("/units.pdf", asyncHandler(exportController.unitsPdf));
+router.get("/afcas.csv", asyncHandler(exportController.afcasCsv));
 
 export default router;

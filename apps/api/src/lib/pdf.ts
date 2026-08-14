@@ -105,6 +105,12 @@ export function streamInvoicePdf(res: Response, invoice: InvoiceForPdf) {
   doc.fillColor(DARK).fontSize(12).font("Helvetica-Bold").text("Total", 400, totalsY, { width: 85 });
   doc.text(money(invoice.total), cols.total, totalsY, { width: 60, align: "right" });
 
+  if (invoice.paymentStatus !== "PAID" && invoice.paymentLink) {
+    totalsY += 40;
+    doc.fillColor(GRAY).fontSize(9).font("Helvetica-Bold").text("PAY VIA MOMO", 50, totalsY);
+    doc.fillColor(BRAND_RED).font("Helvetica").text(invoice.paymentLink, 50, totalsY + 14, { width: 495 });
+  }
+
   if (invoice.notes) {
     totalsY += 40;
     doc.fillColor(GRAY).fontSize(9).font("Helvetica-Bold").text("NOTES", 50, totalsY);

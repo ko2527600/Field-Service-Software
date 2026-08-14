@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum SmsGateway {
+  CAPCOM6
+  HUBTEL
+}
+
 model Business {
   id           String   @id @default(uuid())
   name         String
@@ -21,6 +26,7 @@ model Business {
   nextInvoiceSeq Int    @default(1)
   smsRemindersEnabled   Boolean @default(false)
   smsReminderDaysBefore Int     @default(7)
+  smsGateway            SmsGateway @default(CAPCOM6)
   createdAt    DateTime @default(now())
 
   customers Customer[]
@@ -30,15 +36,25 @@ model Business {
   @@map("businesses")
 }
 
+enum UserRole {
+  ADMIN
+  TECHNICIAN
+  CLIENT
+}
+
 model User {
   id           String   @id @default(uuid())
   businessId   String
   business     Business @relation(fields: [businessId], references: [id])
   email        String   @unique
   passwordHash String
+  role         UserRole @default(ADMIN)
+  customerId   String?
+  customer     Customer? @relation(fields: [customerId], references: [id])
   createdAt    DateTime @default(now())
 
   @@index([businessId])
+  @@index([customerId])
   @@map("users")
 }
 
@@ -64,6 +80,7 @@ model Customer {
 
   units        Unit[]
   invoices     Invoice[]
+  portalUsers  User[]
 
   @@index([businessId])
   @@map("customers")
@@ -127,10 +144,20 @@ model ServiceLog {
   notes         String?
   nextDueDate   DateTime
 
+  latitude            Float?
+  longitude           Float?
+  locationCapturedAt  DateTime?
+  clientRequestId     String?   @unique
+
   createdAt     DateTime @default(now())
 
   @@index([unitId])
   @@map("service_logs")
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
 }
 
 model Invoice {
@@ -146,6 +173,11 @@ model Invoice {
   notes         String?
   subtotal      Decimal  @db.Decimal(10, 2)
   total         Decimal  @db.Decimal(10, 2)
+
+  paymentStatus       PaymentStatus @default(UNPAID)
+  paymentLink         String?
+  paidAt              DateTime?
+  hubtelTransactionId String?
 
   createdAt     DateTime @default(now())
 

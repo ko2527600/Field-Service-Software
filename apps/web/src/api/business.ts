@@ -1,4 +1,4 @@
-import type { BusinessProfileInput } from "@firearmour/shared";
+import type { BusinessProfileInput, SmsGateway } from "@firearmour/shared";
 import { api } from "./client.js";
 
 export type Business = {
@@ -14,6 +14,7 @@ export type Business = {
   email2: string | null;
   smsRemindersEnabled: boolean;
   smsReminderDaysBefore: number;
+  smsGateway: SmsGateway;
   createdAt: string;
 };
 
@@ -23,4 +24,19 @@ export function getBusinessProfile() {
 
 export function updateBusinessProfile(input: BusinessProfileInput) {
   return api.patch<Business>("/business", input);
+}
+
+export type StaffMember = { id: string; email: string; createdAt: string };
+export type StaffInvited = { id: string; email: string; temporaryPassword: string };
+
+export function listStaff() {
+  return api.get<StaffMember[]>("/business/staff");
+}
+
+export function inviteStaff(email: string) {
+  return api.post<StaffInvited>("/business/staff", { email });
+}
+
+export function revokeStaff(id: string) {
+  return api.delete<void>(`/business/staff/${id}`);
 }

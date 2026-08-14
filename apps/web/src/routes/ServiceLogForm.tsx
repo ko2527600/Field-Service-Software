@@ -1,16 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { serviceLogInputSchema, computeNextRenewalDate, type ServiceLogInput } from "@firearmour/shared";
 import { getUnit } from "../api/units.js";
 import { createServiceLog } from "../api/serviceLogs.js";
+import { ApiError } from "../api/client.js";
+import { enqueueServiceLog } from "../offline/syncQueue.js";
 import type { UnitWithLogs } from "../api/types.js";
 import { FormField, inputClass } from "../components/FormField.js";
 import { useOnlineStatus } from "../hooks/useOnlineStatus.js";
 
 function toDateInput(value: Date) {
   return value.toISOString().slice(0, 10);
+}
+
+/** Best-effort GPS capture to prove the technician was on-site; never blocks saving the visit. */
+function captureLocation(): Promise<{ latitude: number; longitude: number } | null> {
+  if (!("geolocation" in navigator)) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => resolve({ latitude: position.coords.latitude, longitude: position.coords.longitude }),
+      () => resolve(null),
+      { timeout: 8000, maximumAge: 60000 },
+    );
+  });
 }
 
 export default function ServiceLogForm() {
@@ -20,6 +34,7 @@ export default function ServiceLogForm() {
   const [unit, setUnit] = useState<UnitWithLogs | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const clientRequestIdRef = useRef(crypto.randomUUID());
 
   const {
     register,
@@ -60,11 +75,31 @@ export default function ServiceLogForm() {
   async function onSubmit(data: ServiceLogInput) {
     if (!unitId) return;
     setSubmitError(null);
+    const location = await captureLocation();
+    const payload: ServiceLogInput = {
+      ...data,
+      latitude: location?.latitude,
+      longitude: location?.longitude,
+      clientRequestId: clientRequestIdRef.current,
+    };
+
+    if (!navigator.onLine) {
+      await enqueueServiceLog(unitId, payload);
+      navigate(`/units/${unitId}`, { state: { offlineSaved: true } });
+      return;
+    }
+
     try {
-      await createServiceLog(unitId, data);
+      await createServiceLog(unitId, payload);
       navigate(`/units/${unitId}`);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Something went wrong");
+      if (err instanceof ApiError) {
+        setSubmitError(err.message);
+        return;
+      }
+      // Network-level failure even though we thought we were online (e.g. a flaky connection) -- queue it instead of losing the visit.
+      await enqueueServiceLog(unitId, payload);
+      navigate(`/units/${unitId}`, { state: { offlineSaved: true } });
     }
   }
 
@@ -103,12 +138,21 @@ export default function ServiceLogForm() {
           <textarea className={inputClass} rows={3} {...register("notes")} />
         </FormField>
 
+        <p className="text-xs text-gray-400">
+          Your GPS location is captured automatically to verify you were on-site.
+        </p>
+
         {submitError && <p className="text-sm text-red-600">{submitError}</p>}
-        {!online && <p className="text-sm text-amber-700">You're offline — reconnect to save this visit.</p>}
+        {!online && (
+          <p className="text-sm text-amber-700">
+            You're offline — this visit will be saved on your device and synced automatically once you're
+            back online.
+          </p>
+        )}
 
         <button
           type="submit"
-          disabled={isSubmitting || !online}
+          disabled={isSubmitting}
           className="w-full rounded-lg bg-brand text-white text-sm font-medium px-4 py-2 shadow-card hover:bg-brand-dark disabled:opacity-50"
         >
           {isSubmitting ? "Saving…" : "Save Visit"}

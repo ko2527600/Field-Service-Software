@@ -25,3 +25,14 @@ export function updateCustomer(id: string, input: Partial<CustomerInput>) {
 export function deleteCustomer(id: string) {
   return api.delete<void>(`/customers/${id}`);
 }
+
+export type PortalAccess = { email: string | null };
+export type PortalAccessCreated = { email: string; temporaryPassword: string };
+
+export function getPortalAccess(customerId: string) {
+  return api.get<PortalAccess>(`/customers/${customerId}/portal-access`);
+}
+
+export function createPortalAccess(customerId: string, email: string) {
+  return api.post<PortalAccessCreated>(`/customers/${customerId}/portal-access`, { email });
+}

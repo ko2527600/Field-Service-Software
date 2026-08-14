@@ -1,8 +1,9 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.js";
-import { RequireAuth } from "./components/RequireAuth.js";
+import { RequireAuth, RequireStaffRole, RequireAdminOnly, RequirePortalRole } from "./components/RequireAuth.js";
 import { Layout } from "./components/Layout.js";
+import { PortalLayout } from "./components/PortalLayout.js";
 import { PageLoading } from "./components/PageLoading.js";
 
 const Login = lazy(() => import("./routes/Login.js"));
@@ -14,12 +15,18 @@ const CustomerDetail = lazy(() => import("./routes/CustomerDetail.js"));
 const CustomerForm = lazy(() => import("./routes/CustomerForm.js"));
 const UnitForm = lazy(() => import("./routes/UnitForm.js"));
 const UnitDetail = lazy(() => import("./routes/UnitDetail.js"));
+const UnitLabel = lazy(() => import("./routes/UnitLabel.js"));
+const CustomerLabels = lazy(() => import("./routes/CustomerLabels.js"));
 const ServiceLogForm = lazy(() => import("./routes/ServiceLogForm.js"));
 const PriorityList = lazy(() => import("./routes/PriorityList.js"));
+const Analytics = lazy(() => import("./routes/Analytics.js"));
+const Scan = lazy(() => import("./routes/Scan.js"));
 const Export = lazy(() => import("./routes/Export.js"));
 const InvoiceList = lazy(() => import("./routes/InvoiceList.js"));
 const InvoiceForm = lazy(() => import("./routes/InvoiceForm.js"));
 const InvoiceDetail = lazy(() => import("./routes/InvoiceDetail.js"));
+const PortalDashboard = lazy(() => import("./routes/portal/PortalDashboard.js"));
+const PortalInvoices = lazy(() => import("./routes/portal/PortalInvoices.js"));
 
 export default function App() {
   return (
@@ -30,22 +37,42 @@ export default function App() {
           <Route path="/register" element={<Register />} />
 
           <Route element={<RequireAuth />}>
-            <Route element={<Layout />}>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/customers" element={<CustomerList />} />
-              <Route path="/customers/new" element={<CustomerForm />} />
-              <Route path="/customers/:id" element={<CustomerDetail />} />
-              <Route path="/customers/:id/edit" element={<CustomerForm />} />
-              <Route path="/customers/:customerId/units/new" element={<UnitForm />} />
-              <Route path="/units/:id" element={<UnitDetail />} />
-              <Route path="/units/:id/edit" element={<UnitForm />} />
-              <Route path="/units/:unitId/service/new" element={<ServiceLogForm />} />
-              <Route path="/priority" element={<PriorityList />} />
-              <Route path="/export" element={<Export />} />
-              <Route path="/invoices" element={<InvoiceList />} />
-              <Route path="/customers/:customerId/invoices/new" element={<InvoiceForm />} />
-              <Route path="/invoices/:id" element={<InvoiceDetail />} />
-              <Route path="/settings" element={<Settings />} />
+            <Route element={<RequireStaffRole />}>
+              {/* Standalone print views -- deliberately outside <Layout> so there's no nav chrome to print. */}
+              <Route path="/units/:id/label" element={<UnitLabel />} />
+              <Route path="/customers/:id/labels" element={<CustomerLabels />} />
+
+              <Route element={<Layout />}>
+                {/* ADMIN + TECHNICIAN: the day-to-day field-service surface */}
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/customers" element={<CustomerList />} />
+                <Route path="/customers/:id" element={<CustomerDetail />} />
+                <Route path="/units/:id" element={<UnitDetail />} />
+                <Route path="/units/:unitId/service/new" element={<ServiceLogForm />} />
+                <Route path="/priority" element={<PriorityList />} />
+                <Route path="/scan" element={<Scan />} />
+
+                {/* ADMIN only: office/owner actions a field technician shouldn't reach */}
+                <Route element={<RequireAdminOnly />}>
+                  <Route path="/customers/new" element={<CustomerForm />} />
+                  <Route path="/customers/:id/edit" element={<CustomerForm />} />
+                  <Route path="/customers/:customerId/units/new" element={<UnitForm />} />
+                  <Route path="/units/:id/edit" element={<UnitForm />} />
+                  <Route path="/analytics" element={<Analytics />} />
+                  <Route path="/export" element={<Export />} />
+                  <Route path="/invoices" element={<InvoiceList />} />
+                  <Route path="/customers/:customerId/invoices/new" element={<InvoiceForm />} />
+                  <Route path="/invoices/:id" element={<InvoiceDetail />} />
+                  <Route path="/settings" element={<Settings />} />
+                </Route>
+              </Route>
+            </Route>
+
+            <Route element={<RequirePortalRole />}>
+              <Route element={<PortalLayout />}>
+                <Route path="/portal" element={<PortalDashboard />} />
+                <Route path="/portal/invoices" element={<PortalInvoices />} />
+              </Route>
             </Route>
           </Route>
         </Routes>

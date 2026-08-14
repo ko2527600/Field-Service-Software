@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EXTINGUISHER_TYPES, RENEWAL_PERIODS } from "./enums.js";
+import { EXTINGUISHER_TYPES, RENEWAL_PERIODS, SMS_GATEWAYS } from "./enums.js";
 
 export const customerInputSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
@@ -49,6 +49,9 @@ export const serviceLogInputSchema = z.object({
   amountCharged: z.coerce.number().nonnegative().optional(),
   notes: z.string().trim().optional().or(z.literal("")),
   nextDueDate: z.coerce.date(),
+  latitude: z.coerce.number().min(-90).max(90).optional(),
+  longitude: z.coerce.number().min(-180).max(180).optional(),
+  clientRequestId: z.string().trim().optional().or(z.literal("")),
 });
 export type ServiceLogInput = z.infer<typeof serviceLogInputSchema>;
 
@@ -77,6 +80,7 @@ export const businessProfileInputSchema = z.object({
   email2: z.string().trim().email("Invalid email").optional().or(z.literal("")),
   smsRemindersEnabled: z.coerce.boolean().default(false),
   smsReminderDaysBefore: z.coerce.number().int().min(1, "Must be at least 1 day").max(90, "Must be 90 days or fewer"),
+  smsGateway: z.enum(SMS_GATEWAYS).default("CAPCOM6"),
 });
 export type BusinessProfileInput = z.infer<typeof businessProfileInputSchema>;
 
@@ -88,6 +92,11 @@ export const invoiceLineItemInputSchema = z.object({
   unitPrice: z.coerce.number().nonnegative(),
 });
 export type InvoiceLineItemInput = z.infer<typeof invoiceLineItemInputSchema>;
+
+export const portalAccessInputSchema = z.object({
+  email: z.string().trim().email("Invalid email"),
+});
+export type PortalAccessInput = z.infer<typeof portalAccessInputSchema>;
 
 export const createInvoiceSchema = z.object({
   customerId: z.string().trim().min(1, "Customer is required"),

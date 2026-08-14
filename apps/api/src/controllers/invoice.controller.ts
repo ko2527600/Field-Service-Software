@@ -29,3 +29,8 @@ export async function pdf(req: Request, res: Response) {
   const invoice = await invoiceService.getInvoice(req.businessId!, req.params.id!);
   streamInvoicePdf(res, invoice);
 }
+
+export async function createPaymentLink(req: Request, res: Response) {
+  const invoice = await invoiceService.generatePaymentLink(req.businessId!, req.params.id!);
+  res.json(invoice);
+}

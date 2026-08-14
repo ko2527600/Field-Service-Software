@@ -6,8 +6,10 @@ import { CustomerListItem } from "../components/CustomerListItem.js";
 import { SearchInput } from "../components/SearchInput.js";
 import { FooterBand } from "../components/FooterBand.js";
 import { PlusIcon, CustomersIcon } from "../components/icons/index.js";
+import { useAuth } from "../hooks/useAuth.js";
 
 export default function CustomerList() {
+  const { user } = useAuth();
   const [customers, setCustomers] = useState<CustomerWithUnits[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -25,13 +27,15 @@ export default function CustomerList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-xl font-extrabold tracking-tight">Customers</h1>
-        <Link
-          to="/customers/new"
-          className="inline-flex items-center gap-1 rounded-lg bg-brand text-white text-sm font-medium px-3 py-1.5 shadow-card hover:bg-brand-dark"
-        >
-          <PlusIcon className="h-4 w-4" strokeWidth={2.2} />
-          Add
-        </Link>
+        {user?.role === "ADMIN" && (
+          <Link
+            to="/customers/new"
+            className="inline-flex items-center gap-1 rounded-lg bg-brand text-white text-sm font-medium px-3 py-1.5 shadow-card hover:bg-brand-dark"
+          >
+            <PlusIcon className="h-4 w-4" strokeWidth={2.2} />
+            Add
+          </Link>
+        )}
       </div>
 
       <SearchInput value={search} onChange={setSearch} placeholder="Search customers…" />

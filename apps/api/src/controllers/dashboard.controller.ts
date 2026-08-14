@@ -11,3 +11,8 @@ export async function priorityList(req: Request, res: Response) {
   const data = await dashboardService.getPriorityList(req.businessId!, limit);
   res.json(data);
 }
+
+export async function analytics(req: Request, res: Response) {
+  const data = await dashboardService.getAnalytics(req.businessId!);
+  res.json(data);
+}
