@@ -1,11 +1,20 @@
 import type { LoginInput, RegisterInput } from "@firearmour/shared";
+import type { UserRole } from "@prisma/client";
 import { prisma } from "../lib/prisma.js";
 import { getDefaultBusinessId } from "../lib/business.js";
 import { hashPassword, verifyPassword, signSessionToken } from "../lib/auth.js";
 import { HttpError } from "../middleware/errorHandler.js";
 
-function toSafeUser(user: { id: string; email: string; businessId: string }) {
-  return { id: user.id, email: user.email, businessId: user.businessId };
+type SafeUserSource = {
+  id: string;
+  email: string;
+  businessId: string;
+  role: UserRole;
+  customerId: string | null;
+};
+
+function toSafeUser(user: SafeUserSource) {
+  return { id: user.id, email: user.email, businessId: user.businessId, role: user.role, customerId: user.customerId };
 }
 
 /**
@@ -37,7 +46,7 @@ export async function register(input: RegisterInput) {
     throw err;
   }
 
-  const token = signSessionToken({ userId: user.id, businessId });
+  const token = signSessionToken({ userId: user.id, businessId, role: user.role, customerId: user.customerId ?? undefined });
   return { token, user: toSafeUser(user) };
 }
 
@@ -48,7 +57,12 @@ export async function login(input: LoginInput) {
   const valid = await verifyPassword(input.password, user.passwordHash);
   if (!valid) throw new HttpError(401, "Invalid email or password");
 
-  const token = signSessionToken({ userId: user.id, businessId: user.businessId });
+  const token = signSessionToken({
+    userId: user.id,
+    businessId: user.businessId,
+    role: user.role,
+    customerId: user.customerId ?? undefined,
+  });
   return { token, user: toSafeUser(user) };
 }
 

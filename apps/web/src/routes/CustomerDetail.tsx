@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { deleteCustomer, getCustomer } from "../api/customers.js";
+import { deleteCustomer, getCustomer, getPortalAccess } from "../api/customers.js";
 import { listInvoices } from "../api/invoices.js";
 import type { CustomerWithUnits, Invoice } from "../api/types.js";
+import type { PortalAccess } from "../api/customers.js";
 import { UnitListItem } from "../components/UnitListItem.js";
+import { PortalAccessPanel } from "../components/PortalAccessPanel.js";
 import { PhoneIcon, MailIcon, MapPinIcon, PlusIcon, InvoiceIcon, ChevronRightIcon } from "../components/icons/index.js";
 
 export default function CustomerDetail() {
@@ -13,14 +15,16 @@ export default function CustomerDetail() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [portalAccess, setPortalAccess] = useState<PortalAccess | null>(null);
 
   function reload() {
     if (!id) return;
     setLoading(true);
-    Promise.all([getCustomer(id), listInvoices({ customerId: id })])
-      .then(([c, inv]) => {
+    Promise.all([getCustomer(id), listInvoices({ customerId: id }), getPortalAccess(id)])
+      .then(([c, inv, access]) => {
         setCustomer(c);
         setInvoices(inv);
+        setPortalAccess(access);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -84,6 +88,10 @@ export default function CustomerDetail() {
         )}
         {customer.notes && <div className="text-gray-500 pt-1">{customer.notes}</div>}
       </div>
+
+      {portalAccess && (
+        <PortalAccessPanel customerId={customer.id} access={portalAccess} onCreated={setPortalAccess} />
+      )}
 
       <div>
         <div className="flex items-center justify-between mb-2">

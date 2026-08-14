@@ -16,3 +16,21 @@ export function RequireAuth() {
 
   return <Outlet />;
 }
+
+/** Nested inside RequireAuth: keeps the read-only CLIENT portal role out of the full admin UI. */
+export function RequireAdminRole() {
+  const { user } = useAuth();
+  if (user?.role === "CLIENT") {
+    return <Navigate to="/portal" replace />;
+  }
+  return <Outlet />;
+}
+
+/** Nested inside RequireAuth: keeps ADMIN users (who have no customerId) out of the client portal UI. */
+export function RequirePortalRole() {
+  const { user } = useAuth();
+  if (user?.role !== "CLIENT") {
+    return <Navigate to="/" replace />;
+  }
+  return <Outlet />;
+}

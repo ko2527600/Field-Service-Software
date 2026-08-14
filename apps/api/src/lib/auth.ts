@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import type { UserRole } from "@prisma/client";
 
 const JWT_SECRET = process.env.JWT_SECRET ?? "dev-only-insecure-secret-change-me";
 const TOKEN_EXPIRY = "7d";
@@ -12,6 +13,8 @@ if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
 export type SessionPayload = {
   userId: string;
   businessId: string;
+  role: UserRole;
+  customerId?: string;
 };
 
 export function hashPassword(password: string): Promise<string> {

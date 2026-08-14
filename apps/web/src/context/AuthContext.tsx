@@ -7,8 +7,8 @@ import { setUnauthorizedHandler } from "../api/client.js";
 export type AuthContextValue = {
   user: AuthUser | null;
   loading: boolean;
-  login: (input: LoginInput) => Promise<void>;
-  register: (input: RegisterInput) => Promise<void>;
+  login: (input: LoginInput) => Promise<AuthUser>;
+  register: (input: RegisterInput) => Promise<AuthUser>;
   logout: () => Promise<void>;
 };
 
@@ -31,11 +31,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function login(input: LoginInput) {
     const authedUser = await authApi.login(input);
     setUser(authedUser);
+    return authedUser;
   }
 
   async function register(input: RegisterInput) {
     const authedUser = await authApi.register(input);
     setUser(authedUser);
+    return authedUser;
   }
 
   async function logout() {

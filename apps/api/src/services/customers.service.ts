@@ -1,6 +1,8 @@
+import crypto from "node:crypto";
 import type { CustomerInput } from "@firearmour/shared";
 import { prisma } from "../lib/prisma.js";
 import { HttpError } from "../middleware/errorHandler.js";
+import { hashPassword } from "../lib/auth.js";
 import { serializeUnit } from "./units.service.js";
 
 export type CustomerListOptions = {
@@ -102,4 +104,51 @@ export async function archiveCustomer(businessId: string, id: string) {
     throw new HttpError(404, "Customer not found");
   }
   await prisma.customer.update({ where: { id }, data: { archivedAt: new Date() } });
+}
+
+function generateTempPassword(): string {
+  return crypto.randomBytes(9).toString("base64url");
+}
+
+export async function getPortalAccess(businessId: string, customerId: string) {
+  const customer = await prisma.customer.findUnique({ where: { id: customerId } });
+  if (!customer || customer.archivedAt || customer.businessId !== businessId) {
+    throw new HttpError(404, "Customer not found");
+  }
+  const portalUser = await prisma.user.findFirst({
+    where: { customerId, role: "CLIENT" },
+    select: { email: true },
+  });
+  return { email: portalUser?.email ?? null };
+}
+
+/**
+ * Creates the customer's read-only portal login if none exists, or resets
+ * its email/password if one does. There's no email infrastructure yet, so
+ * the generated temporary password is returned once for the admin to share
+ * with the client directly -- it is never retrievable again after this call.
+ */
+export async function createOrResetPortalAccess(businessId: string, customerId: string, email: string) {
+  const customer = await prisma.customer.findUnique({ where: { id: customerId } });
+  if (!customer || customer.archivedAt || customer.businessId !== businessId) {
+    throw new HttpError(404, "Customer not found");
+  }
+
+  const temporaryPassword = generateTempPassword();
+  const passwordHash = await hashPassword(temporaryPassword);
+  const existingPortalUser = await prisma.user.findFirst({ where: { customerId, role: "CLIENT" } });
+
+  try {
+    const user = existingPortalUser
+      ? await prisma.user.update({ where: { id: existingPortalUser.id }, data: { email, passwordHash } })
+      : await prisma.user.create({
+          data: { businessId, email, passwordHash, role: "CLIENT", customerId },
+        });
+    return { email: user.email, temporaryPassword };
+  } catch (err: unknown) {
+    if (typeof err === "object" && err && "code" in err && err.code === "P2002") {
+      throw new HttpError(409, "That email is already in use by another login");
+    }
+    throw err;
+  }
 }

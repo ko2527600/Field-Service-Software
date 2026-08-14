@@ -23,8 +23,9 @@ export default function Login() {
   async function onSubmit(data: LoginInput) {
     setSubmitError(null);
     try {
-      await login(data);
-      const from = (location.state as { from?: string } | null)?.from ?? "/";
+      const user = await login(data);
+      const defaultPath = user.role === "CLIENT" ? "/portal" : "/";
+      const from = (location.state as { from?: string } | null)?.from ?? defaultPath;
       navigate(from, { replace: true });
     } catch (err) {
       setSubmitError(err instanceof ApiError ? err.message : "Something went wrong");

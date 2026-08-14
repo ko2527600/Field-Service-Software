@@ -21,6 +21,9 @@ export type ExtinguisherType = (typeof EXTINGUISHER_TYPES)[number];
 export const UNIT_STATUSES = ["ACTIVE", "DUE_SOON", "EXPIRED"] as const;
 export type UnitStatus = (typeof UNIT_STATUSES)[number];
 
+export const USER_ROLES = ["ADMIN", "CLIENT"] as const;
+export type UserRole = (typeof USER_ROLES)[number];
+
 export const RENEWAL_PERIOD_LABELS: Record<RenewalPeriod, string> = {
   MONTHLY: "Monthly",
   QUARTERLY: "Quarterly",

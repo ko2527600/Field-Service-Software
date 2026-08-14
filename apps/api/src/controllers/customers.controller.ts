@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { customerInputSchema } from "@firearmour/shared";
+import { customerInputSchema, portalAccessInputSchema } from "@firearmour/shared";
 import { customerListQuerySchema } from "../validation/query.schema.js";
 import * as customersService from "../services/customers.service.js";
 
@@ -29,4 +29,15 @@ export async function update(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
   await customersService.archiveCustomer(req.businessId!, req.params.id!);
   res.status(204).end();
+}
+
+export async function getPortalAccess(req: Request, res: Response) {
+  const access = await customersService.getPortalAccess(req.businessId!, req.params.id!);
+  res.json(access);
+}
+
+export async function createPortalAccess(req: Request, res: Response) {
+  const input = portalAccessInputSchema.parse(req.body);
+  const access = await customersService.createOrResetPortalAccess(req.businessId!, req.params.id!, input.email);
+  res.status(201).json(access);
 }

@@ -92,6 +92,11 @@ export const invoiceLineItemInputSchema = z.object({
 });
 export type InvoiceLineItemInput = z.infer<typeof invoiceLineItemInputSchema>;
 
+export const portalAccessInputSchema = z.object({
+  email: z.string().trim().email("Invalid email"),
+});
+export type PortalAccessInput = z.infer<typeof portalAccessInputSchema>;
+
 export const createInvoiceSchema = z.object({
   customerId: z.string().trim().min(1, "Customer is required"),
   dueDate: z.preprocess((val) => (val === "" ? undefined : val), z.coerce.date().optional()),
