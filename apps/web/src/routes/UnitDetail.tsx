@@ -6,11 +6,14 @@ import { deleteUnit, getUnit } from "../api/units.js";
 import type { UnitWithLogs } from "../api/types.js";
 import { StatusBadge } from "../components/StatusBadge.js";
 import { PlusIcon, MapPinIcon, ClockIcon, CheckCircleIcon } from "../components/icons/index.js";
+import { useAuth } from "../hooks/useAuth.js";
 
 export default function UnitDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
   const offlineSaved = Boolean((location.state as { offlineSaved?: boolean } | null)?.offlineSaved);
   const [unit, setUnit] = useState<UnitWithLogs | null>(null);
   const [loading, setLoading] = useState(true);
@@ -136,18 +139,22 @@ export default function UnitDetail() {
           <PlusIcon className="h-4 w-4" strokeWidth={2.2} />
           Log Service Visit
         </Link>
-        <Link
-          to={`/units/${unit.id}/edit`}
-          className="rounded-lg border border-gray-300 text-sm font-medium px-3 py-1.5 hover:bg-gray-50"
-        >
-          Edit
-        </Link>
-        <button
-          onClick={handleDelete}
-          className="rounded-lg border border-red-300 text-red-600 text-sm font-medium px-3 py-1.5 hover:bg-red-50"
-        >
-          Archive
-        </button>
+        {isAdmin && (
+          <>
+            <Link
+              to={`/units/${unit.id}/edit`}
+              className="rounded-lg border border-gray-300 text-sm font-medium px-3 py-1.5 hover:bg-gray-50"
+            >
+              Edit
+            </Link>
+            <button
+              onClick={handleDelete}
+              className="rounded-lg border border-red-300 text-red-600 text-sm font-medium px-3 py-1.5 hover:bg-red-50"
+            >
+              Archive
+            </button>
+          </>
+        )}
       </div>
 
       <div>

@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.js";
-import { RequireAuth, RequireAdminRole, RequirePortalRole } from "./components/RequireAuth.js";
+import { RequireAuth, RequireStaffRole, RequireAdminOnly, RequirePortalRole } from "./components/RequireAuth.js";
 import { Layout } from "./components/Layout.js";
 import { PortalLayout } from "./components/PortalLayout.js";
 import { PageLoading } from "./components/PageLoading.js";
@@ -35,25 +35,30 @@ export default function App() {
           <Route path="/register" element={<Register />} />
 
           <Route element={<RequireAuth />}>
-            <Route element={<RequireAdminRole />}>
+            <Route element={<RequireStaffRole />}>
               <Route element={<Layout />}>
+                {/* ADMIN + TECHNICIAN: the day-to-day field-service surface */}
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/customers" element={<CustomerList />} />
-                <Route path="/customers/new" element={<CustomerForm />} />
                 <Route path="/customers/:id" element={<CustomerDetail />} />
-                <Route path="/customers/:id/edit" element={<CustomerForm />} />
-                <Route path="/customers/:customerId/units/new" element={<UnitForm />} />
                 <Route path="/units/:id" element={<UnitDetail />} />
-                <Route path="/units/:id/edit" element={<UnitForm />} />
                 <Route path="/units/:unitId/service/new" element={<ServiceLogForm />} />
                 <Route path="/priority" element={<PriorityList />} />
-                <Route path="/analytics" element={<Analytics />} />
                 <Route path="/scan" element={<Scan />} />
-                <Route path="/export" element={<Export />} />
-                <Route path="/invoices" element={<InvoiceList />} />
-                <Route path="/customers/:customerId/invoices/new" element={<InvoiceForm />} />
-                <Route path="/invoices/:id" element={<InvoiceDetail />} />
-                <Route path="/settings" element={<Settings />} />
+
+                {/* ADMIN only: office/owner actions a field technician shouldn't reach */}
+                <Route element={<RequireAdminOnly />}>
+                  <Route path="/customers/new" element={<CustomerForm />} />
+                  <Route path="/customers/:id/edit" element={<CustomerForm />} />
+                  <Route path="/customers/:customerId/units/new" element={<UnitForm />} />
+                  <Route path="/units/:id/edit" element={<UnitForm />} />
+                  <Route path="/analytics" element={<Analytics />} />
+                  <Route path="/export" element={<Export />} />
+                  <Route path="/invoices" element={<InvoiceList />} />
+                  <Route path="/customers/:customerId/invoices/new" element={<InvoiceForm />} />
+                  <Route path="/invoices/:id" element={<InvoiceDetail />} />
+                  <Route path="/settings" element={<Settings />} />
+                </Route>
               </Route>
             </Route>
 

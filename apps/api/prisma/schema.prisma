@@ -38,6 +38,7 @@ model Business {
 
 enum UserRole {
   ADMIN
+  TECHNICIAN
   CLIENT
 }
 

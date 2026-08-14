@@ -1,20 +1,24 @@
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth.js";
 import { HomeIcon, CustomersIcon, ClockIcon, InvoiceIcon, DownloadIcon, ScanIcon } from "../icons/index.js";
 
 const items = [
-  { to: "/", label: "Home", Icon: HomeIcon },
-  { to: "/customers", label: "Customers", Icon: CustomersIcon },
-  { to: "/priority", label: "Priority", Icon: ClockIcon },
-  { to: "/scan", label: "Scan", Icon: ScanIcon },
-  { to: "/invoices", label: "Invoices", Icon: InvoiceIcon },
-  { to: "/export", label: "Export", Icon: DownloadIcon },
+  { to: "/", label: "Home", Icon: HomeIcon, adminOnly: false },
+  { to: "/customers", label: "Customers", Icon: CustomersIcon, adminOnly: false },
+  { to: "/priority", label: "Priority", Icon: ClockIcon, adminOnly: false },
+  { to: "/scan", label: "Scan", Icon: ScanIcon, adminOnly: false },
+  { to: "/invoices", label: "Invoices", Icon: InvoiceIcon, adminOnly: true },
+  { to: "/export", label: "Export", Icon: DownloadIcon, adminOnly: true },
 ];
 
 export function BottomNav() {
+  const { user } = useAuth();
+  const visibleItems = items.filter((item) => !item.adminOnly || user?.role === "ADMIN");
+
   return (
     <nav className="fixed bottom-0 inset-x-0 z-20 border-t border-gray-200 bg-white/95 backdrop-blur md:hidden pb-[env(safe-area-inset-bottom)]">
       <ul className="flex justify-around">
-        {items.map(({ to, label, Icon }) => (
+        {visibleItems.map(({ to, label, Icon }) => (
           <li key={to} className="flex-1">
             <NavLink
               to={to}

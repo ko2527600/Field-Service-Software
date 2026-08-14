@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { corsOptions } from "./config/cors.js";
-import { requireAuth, requireAdmin, requirePortalAccess } from "./middleware/auth.js";
+import { requireAuth, requireAdmin, requireStaff, requirePortalAccess } from "./middleware/auth.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import authRouter from "./routes/auth.routes.js";
 import businessRouter from "./routes/business.routes.js";
@@ -27,10 +27,13 @@ export function createApp() {
 
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/business", requireAuth, requireAdmin, businessRouter);
-  app.use("/api/v1/customers", requireAuth, requireAdmin, customersRouter);
-  app.use("/api/v1/units", requireAuth, requireAdmin, unitsRouter);
-  app.use("/api/v1/service-logs", requireAuth, requireAdmin, serviceLogsRouter);
-  app.use("/api/v1/dashboard", requireAuth, requireAdmin, dashboardRouter);
+  // Customers/units/service-logs/dashboard are readable+usable by TECHNICIAN too
+  // (that's a field tech's whole job); the admin-only actions within each are
+  // gated at the specific route inside each router file.
+  app.use("/api/v1/customers", requireAuth, requireStaff, customersRouter);
+  app.use("/api/v1/units", requireAuth, requireStaff, unitsRouter);
+  app.use("/api/v1/service-logs", requireAuth, requireStaff, serviceLogsRouter);
+  app.use("/api/v1/dashboard", requireAuth, requireStaff, dashboardRouter);
   app.use("/api/v1/export", requireAuth, requireAdmin, exportRouter);
   app.use("/api/v1/invoices", requireAuth, requireAdmin, invoiceRouter);
   app.use("/api/v1/reminders", requireAuth, requireAdmin, remindersRouter);

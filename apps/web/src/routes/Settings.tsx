@@ -6,6 +6,7 @@ import { getBusinessProfile, updateBusinessProfile } from "../api/business.js";
 import { runReminders, type ReminderRunResult } from "../api/reminders.js";
 import { FormField, inputClass } from "../components/FormField.js";
 import { SettingsIcon } from "../components/icons/index.js";
+import { StaffAccessPanel } from "../components/StaffAccessPanel.js";
 import { ApiError } from "../api/client.js";
 
 export default function Settings() {
@@ -189,6 +190,8 @@ export default function Settings() {
           )}
         </div>
       )}
+
+      <StaffAccessPanel />
     </div>
   );
 }

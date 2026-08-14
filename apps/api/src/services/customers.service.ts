@@ -1,8 +1,7 @@
-import crypto from "node:crypto";
 import type { CustomerInput } from "@firearmour/shared";
 import { prisma } from "../lib/prisma.js";
 import { HttpError } from "../middleware/errorHandler.js";
-import { hashPassword } from "../lib/auth.js";
+import { hashPassword, generateTempPassword } from "../lib/auth.js";
 import { serializeUnit } from "./units.service.js";
 
 export type CustomerListOptions = {
@@ -104,10 +103,6 @@ export async function archiveCustomer(businessId: string, id: string) {
     throw new HttpError(404, "Customer not found");
   }
   await prisma.customer.update({ where: { id }, data: { archivedAt: new Date() } });
-}
-
-function generateTempPassword(): string {
-  return crypto.randomBytes(9).toString("base64url");
 }
 
 export async function getPortalAccess(businessId: string, customerId: string) {

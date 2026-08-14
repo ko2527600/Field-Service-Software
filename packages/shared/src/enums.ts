@@ -21,8 +21,14 @@ export type ExtinguisherType = (typeof EXTINGUISHER_TYPES)[number];
 export const UNIT_STATUSES = ["ACTIVE", "DUE_SOON", "EXPIRED"] as const;
 export type UnitStatus = (typeof UNIT_STATUSES)[number];
 
-export const USER_ROLES = ["ADMIN", "CLIENT"] as const;
+export const USER_ROLES = ["ADMIN", "TECHNICIAN", "CLIENT"] as const;
 export type UserRole = (typeof USER_ROLES)[number];
+
+export const USER_ROLE_LABELS: Record<UserRole, string> = {
+  ADMIN: "Owner / Admin",
+  TECHNICIAN: "Field Technician",
+  CLIENT: "Client (read-only)",
+};
 
 export const SMS_GATEWAYS = ["CAPCOM6", "HUBTEL"] as const;
 export type SmsGateway = (typeof SMS_GATEWAYS)[number];

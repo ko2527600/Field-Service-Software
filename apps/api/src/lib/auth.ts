@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import type { UserRole } from "@prisma/client";
@@ -19,6 +20,11 @@ export type SessionPayload = {
 
 export function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
+}
+
+/** Used for staff/portal logins the admin creates on someone's behalf, shown once and never stored in plaintext. */
+export function generateTempPassword(): string {
+  return crypto.randomBytes(9).toString("base64url");
 }
 
 export function verifyPassword(password: string, hash: string): Promise<boolean> {

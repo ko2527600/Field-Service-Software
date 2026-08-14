@@ -38,6 +38,15 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction): v
   next();
 }
 
+/** Lets in ADMIN and TECHNICIAN (both operate the field-service side of the app); blocks CLIENT. */
+export function requireStaff(req: Request, res: Response, next: NextFunction): void {
+  if (req.role !== "ADMIN" && req.role !== "TECHNICIAN") {
+    res.status(403).json({ error: "Staff access required" });
+    return;
+  }
+  next();
+}
+
 /** Restricts the client portal API to CLIENT-role users scoped to a customer -- an ADMIN token has no customerId and must not reach these routes. */
 export function requirePortalAccess(req: Request, res: Response, next: NextFunction): void {
   if (req.role !== "CLIENT" || !req.customerId) {

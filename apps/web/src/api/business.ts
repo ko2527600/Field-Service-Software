@@ -25,3 +25,18 @@ export function getBusinessProfile() {
 export function updateBusinessProfile(input: BusinessProfileInput) {
   return api.patch<Business>("/business", input);
 }
+
+export type StaffMember = { id: string; email: string; createdAt: string };
+export type StaffInvited = { id: string; email: string; temporaryPassword: string };
+
+export function listStaff() {
+  return api.get<StaffMember[]>("/business/staff");
+}
+
+export function inviteStaff(email: string) {
+  return api.post<StaffInvited>("/business/staff", { email });
+}
+
+export function revokeStaff(id: string) {
+  return api.delete<void>(`/business/staff/${id}`);
+}
