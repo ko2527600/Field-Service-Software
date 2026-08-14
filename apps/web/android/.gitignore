@@ -1,0 +1,17 @@
+# Machine-specific -- points at this machine's Android SDK install path.
+local.properties
+
+# IDE / Gradle local state
+.idea/
+*.iml
+.gradle/
+captures/
+.externalNativeBuild/
+.cxx/
+local.properties
+
+# Web build output copied in by `cap sync` -- regenerated on every build from
+# apps/web/dist, same reasoning as dist/ itself not being committed.
+app/src/main/assets/public/
+app/src/main/assets/capacitor.config.json
+app/src/main/assets/capacitor.plugins.json
