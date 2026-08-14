@@ -65,6 +65,12 @@ export type DashboardSummary = {
   totalCustomers: number;
 };
 
+export type DashboardAnalytics = {
+  statusBreakdown: { ACTIVE: number; DUE_SOON: number; EXPIRED: number };
+  upcomingRenewals: { month: string; dueCount: number; estimatedRevenue: number }[];
+  actualRevenue: { month: string; revenue: number }[];
+};
+
 export type InvoiceLineItem = {
   id: string;
   invoiceId: string;

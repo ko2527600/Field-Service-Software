@@ -8,6 +8,7 @@ import {
   InvoiceIcon,
   SettingsIcon,
   ScanIcon,
+  ChartIcon,
 } from "../icons/index.js";
 
 const items = [
@@ -16,6 +17,7 @@ const items = [
   { to: "/priority", label: "Priority List", Icon: ClockIcon },
   { to: "/scan", label: "Scan", Icon: ScanIcon },
   { to: "/invoices", label: "Invoices", Icon: InvoiceIcon },
+  { to: "/analytics", label: "Analytics", Icon: ChartIcon },
   { to: "/export", label: "Export", Icon: DownloadIcon },
 ];
 

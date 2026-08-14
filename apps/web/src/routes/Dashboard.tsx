@@ -6,7 +6,7 @@ import { DashboardSummaryCards } from "../components/DashboardSummaryCards.js";
 import { UnitListItem } from "../components/UnitListItem.js";
 import { HeroBanner } from "../components/HeroBanner.js";
 import { FooterBand } from "../components/FooterBand.js";
-import { PlusIcon } from "../components/icons/index.js";
+import { PlusIcon, ChartIcon } from "../components/icons/index.js";
 
 export default function Dashboard() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
@@ -32,7 +32,13 @@ export default function Dashboard() {
       <HeroBanner />
 
       <div>
-        <h1 className="text-xl font-extrabold tracking-tight mb-3">Dashboard</h1>
+        <div className="flex items-center justify-between mb-3">
+          <h1 className="text-xl font-extrabold tracking-tight">Dashboard</h1>
+          <Link to="/analytics" className="inline-flex items-center gap-1.5 text-sm text-brand hover:underline">
+            <ChartIcon className="h-4 w-4" strokeWidth={1.8} />
+            Fleet Analytics
+          </Link>
+        </div>
         {summary && <DashboardSummaryCards summary={summary} />}
       </div>
 

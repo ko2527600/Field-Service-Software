@@ -17,3 +17,4 @@ export * from "./MapPinIcon.js";
 export * from "./SettingsIcon.js";
 export * from "./ShieldIcon.js";
 export * from "./ScanIcon.js";
+export * from "./ChartIcon.js";
