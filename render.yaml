@@ -1,3 +1,9 @@
+databases:
+  - name: firearmour-db
+    plan: free
+    databaseName: firearmour
+    user: firearmour
+
 services:
   - type: web
     name: fire-armour-api
@@ -11,8 +17,30 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: firearmour-db
+          property: connectionString
       - key: JWT_SECRET
-        sync: false
+        generateValue: true
       - key: CORS_ORIGIN
+        sync: false
+      - key: API_PUBLIC_URL
+        sync: false
+      # Optional -- leave unset to launch without MoMo payments / Hubtel SMS;
+      # both fail with a clear message instead of breaking anything until set.
+      - key: HUBTEL_CLIENT_ID
+        sync: false
+      - key: HUBTEL_CLIENT_SECRET
+        sync: false
+      - key: HUBTEL_MERCHANT_ACCOUNT_NUMBER
+        sync: false
+      - key: HUBTEL_SMS_CLIENT_ID
+        sync: false
+      - key: HUBTEL_SMS_CLIENT_SECRET
+        sync: false
+      - key: HUBTEL_SMS_SENDER_ID
+        sync: false
+      - key: SMS_GATEWAY_LOGIN
+        sync: false
+      - key: SMS_GATEWAY_PASSWORD
         sync: false
