@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import QRCode from "qrcode";
 import { EXTINGUISHER_TYPE_LABELS, RENEWAL_PERIOD_LABELS } from "@firearmour/shared";
 import { deleteUnit, getUnit } from "../api/units.js";
 import type { UnitWithLogs } from "../api/types.js";
 import { StatusBadge } from "../components/StatusBadge.js";
-import { PlusIcon, MapPinIcon, ClockIcon } from "../components/icons/index.js";
+import { PlusIcon, MapPinIcon, ClockIcon, CheckCircleIcon } from "../components/icons/index.js";
 
 export default function UnitDetail() {
   const { id } = useParams();
@@ -12,6 +13,7 @@ export default function UnitDetail() {
   const [unit, setUnit] = useState<UnitWithLogs | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 
   function reload() {
     if (!id) return;
@@ -23,6 +25,14 @@ export default function UnitDetail() {
   }
 
   useEffect(reload, [id]);
+
+  useEffect(() => {
+    if (!unit) return;
+    const deepLink = `${window.location.origin}/units/${unit.id}`;
+    QRCode.toDataURL(deepLink, { width: 160, margin: 1 })
+      .then(setQrDataUrl)
+      .catch(() => setQrDataUrl(null));
+  }, [unit]);
 
   async function handleDelete() {
     if (!id || !unit || !confirm("Archive this extinguisher? Its service history is kept but hidden.")) return;
@@ -49,6 +59,16 @@ export default function UnitDetail() {
         </div>
         <StatusBadge status={unit.status} />
       </div>
+
+      {qrDataUrl && (
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-card flex items-center gap-4">
+          <img src={qrDataUrl} alt="Scannable QR code for this extinguisher" className="h-24 w-24" />
+          <div className="text-sm text-gray-500">
+            Print and affix this QR code to the unit. Technicians can scan it in the field to pull up this
+            record instantly.
+          </div>
+        </div>
+      )}
 
       <div className="rounded-lg border border-gray-200 bg-white p-4 text-sm space-y-2 shadow-card">
         <div className="flex justify-between">
@@ -116,6 +136,13 @@ export default function UnitDetail() {
                 {log.technician && <div className="text-gray-500">Technician: {log.technician}</div>}
                 <div className="text-gray-500">Next due: {new Date(log.nextDueDate).toLocaleDateString()}</div>
                 {log.notes && <div className="text-gray-500 mt-1">{log.notes}</div>}
+                {log.locationCapturedAt && log.latitude != null && log.longitude != null && (
+                  <div className="text-emerald-700 mt-1 text-xs flex items-center gap-1">
+                    <CheckCircleIcon className="h-3.5 w-3.5" strokeWidth={2} />
+                    Verified on-site · {log.latitude.toFixed(5)}, {log.longitude.toFixed(5)} ·{" "}
+                    {new Date(log.locationCapturedAt).toLocaleString()}
+                  </div>
+                )}
               </li>
             ))}
           </ul>

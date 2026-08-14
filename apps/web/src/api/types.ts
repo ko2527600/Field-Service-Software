@@ -51,6 +51,9 @@ export type ServiceLog = {
   amountCharged: string | null;
   notes: string | null;
   nextDueDate: string;
+  latitude: number | null;
+  longitude: number | null;
+  locationCapturedAt: string | null;
   createdAt: string;
 };
 

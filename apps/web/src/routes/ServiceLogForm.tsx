@@ -13,6 +13,18 @@ function toDateInput(value: Date) {
   return value.toISOString().slice(0, 10);
 }
 
+/** Best-effort GPS capture to prove the technician was on-site; never blocks saving the visit. */
+function captureLocation(): Promise<{ latitude: number; longitude: number } | null> {
+  if (!("geolocation" in navigator)) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => resolve({ latitude: position.coords.latitude, longitude: position.coords.longitude }),
+      () => resolve(null),
+      { timeout: 8000, maximumAge: 60000 },
+    );
+  });
+}
+
 export default function ServiceLogForm() {
   const { unitId } = useParams();
   const navigate = useNavigate();
@@ -61,7 +73,12 @@ export default function ServiceLogForm() {
     if (!unitId) return;
     setSubmitError(null);
     try {
-      await createServiceLog(unitId, data);
+      const location = await captureLocation();
+      await createServiceLog(unitId, {
+        ...data,
+        latitude: location?.latitude,
+        longitude: location?.longitude,
+      });
       navigate(`/units/${unitId}`);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Something went wrong");
@@ -102,6 +119,10 @@ export default function ServiceLogForm() {
         <FormField label="Notes">
           <textarea className={inputClass} rows={3} {...register("notes")} />
         </FormField>
+
+        <p className="text-xs text-gray-400">
+          Your GPS location is captured automatically to verify you were on-site.
+        </p>
 
         {submitError && <p className="text-sm text-red-600">{submitError}</p>}
         {!online && <p className="text-sm text-amber-700">You're offline — reconnect to save this visit.</p>}

@@ -7,12 +7,14 @@ import {
   DownloadIcon,
   InvoiceIcon,
   SettingsIcon,
+  ScanIcon,
 } from "../icons/index.js";
 
 const items = [
   { to: "/", label: "Dashboard", Icon: HomeIcon },
   { to: "/customers", label: "Customers", Icon: CustomersIcon },
   { to: "/priority", label: "Priority List", Icon: ClockIcon },
+  { to: "/scan", label: "Scan", Icon: ScanIcon },
   { to: "/invoices", label: "Invoices", Icon: InvoiceIcon },
   { to: "/export", label: "Export", Icon: DownloadIcon },
 ];

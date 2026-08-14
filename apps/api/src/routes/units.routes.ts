@@ -6,6 +6,7 @@ import * as serviceLogsController from "../controllers/serviceLogs.controller.js
 const router = Router();
 
 router.get("/", asyncHandler(unitsController.list));
+router.get("/lookup", asyncHandler(unitsController.lookup));
 router.get("/:id", asyncHandler(unitsController.get));
 router.patch("/:id", asyncHandler(unitsController.update));
 router.delete("/:id", asyncHandler(unitsController.remove));

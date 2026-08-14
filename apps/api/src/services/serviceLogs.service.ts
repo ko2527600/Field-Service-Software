@@ -18,12 +18,24 @@ export async function listServiceLogs(businessId: string, unitId: string) {
  * Creates a service log entry and updates the unit's renewalDate to the
  * log's nextDueDate, so status always reflects the latest recorded visit
  * while each log entry preserves what was decided at that visit.
+ *
+ * If clientRequestId is provided and a log with it already exists, that
+ * existing log is returned instead of inserting a duplicate -- this makes
+ * retries from the offline sync queue safe (a request can succeed on the
+ * server but fail to reach the client, causing a retry).
  */
 export async function createServiceLog(businessId: string, unitId: string, input: ServiceLogInput) {
   const unit = await prisma.unit.findUnique({ where: { id: unitId }, include: { customer: true } });
   if (!unit || unit.archivedAt || unit.customer.businessId !== businessId) {
     throw new HttpError(404, "Unit not found");
   }
+
+  if (input.clientRequestId) {
+    const existing = await prisma.serviceLog.findUnique({ where: { clientRequestId: input.clientRequestId } });
+    if (existing) return existing;
+  }
+
+  const hasLocation = input.latitude != null && input.longitude != null;
 
   const [log] = await prisma.$transaction([
     prisma.serviceLog.create({
@@ -34,6 +46,10 @@ export async function createServiceLog(businessId: string, unitId: string, input
         amountCharged: input.amountCharged,
         notes: input.notes || null,
         nextDueDate: input.nextDueDate,
+        latitude: hasLocation ? input.latitude : null,
+        longitude: hasLocation ? input.longitude : null,
+        locationCapturedAt: hasLocation ? new Date() : null,
+        clientRequestId: input.clientRequestId || null,
       },
     }),
     prisma.unit.update({

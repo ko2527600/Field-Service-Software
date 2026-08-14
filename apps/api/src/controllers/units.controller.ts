@@ -14,6 +14,16 @@ export async function get(req: Request, res: Response) {
   res.json(unit);
 }
 
+export async function lookup(req: Request, res: Response) {
+  const serial = typeof req.query.serial === "string" ? req.query.serial.trim() : "";
+  if (!serial) {
+    res.status(400).json({ message: "serial query param is required" });
+    return;
+  }
+  const unit = await unitsService.getUnitBySerial(req.businessId!, serial);
+  res.json(unit);
+}
+
 export async function create(req: Request, res: Response) {
   const input = unitInputSchema.parse(req.body);
   const unit = await unitsService.createUnit(req.businessId!, req.params.customerId!, input);

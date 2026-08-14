@@ -16,6 +16,7 @@ const UnitForm = lazy(() => import("./routes/UnitForm.js"));
 const UnitDetail = lazy(() => import("./routes/UnitDetail.js"));
 const ServiceLogForm = lazy(() => import("./routes/ServiceLogForm.js"));
 const PriorityList = lazy(() => import("./routes/PriorityList.js"));
+const Scan = lazy(() => import("./routes/Scan.js"));
 const Export = lazy(() => import("./routes/Export.js"));
 const InvoiceList = lazy(() => import("./routes/InvoiceList.js"));
 const InvoiceForm = lazy(() => import("./routes/InvoiceForm.js"));
@@ -41,6 +42,7 @@ export default function App() {
               <Route path="/units/:id/edit" element={<UnitForm />} />
               <Route path="/units/:unitId/service/new" element={<ServiceLogForm />} />
               <Route path="/priority" element={<PriorityList />} />
+              <Route path="/scan" element={<Scan />} />
               <Route path="/export" element={<Export />} />
               <Route path="/invoices" element={<InvoiceList />} />
               <Route path="/customers/:customerId/invoices/new" element={<InvoiceForm />} />

@@ -49,6 +49,9 @@ export const serviceLogInputSchema = z.object({
   amountCharged: z.coerce.number().nonnegative().optional(),
   notes: z.string().trim().optional().or(z.literal("")),
   nextDueDate: z.coerce.date(),
+  latitude: z.coerce.number().min(-90).max(90).optional(),
+  longitude: z.coerce.number().min(-180).max(180).optional(),
+  clientRequestId: z.string().trim().optional().or(z.literal("")),
 });
 export type ServiceLogInput = z.infer<typeof serviceLogInputSchema>;
 

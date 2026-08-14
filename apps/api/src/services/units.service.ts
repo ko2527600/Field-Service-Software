@@ -39,6 +39,21 @@ export async function listUnits(businessId: string, filters: UnitListFilters) {
   return serialized;
 }
 
+/** Fallback lookup for scanning a pre-existing manufacturer barcode that encodes a serial number instead of our own QR deep link. */
+export async function getUnitBySerial(businessId: string, serialNumber: string) {
+  const unit = await prisma.unit.findFirst({
+    where: { serialNumber, archivedAt: null, customer: { businessId, archivedAt: null } },
+    include: {
+      customer: { select: { name: true, businessId: true } },
+      serviceLogs: { orderBy: { serviceDate: "desc" } },
+    },
+  });
+  if (!unit) {
+    throw new HttpError(404, "Unit not found");
+  }
+  return serializeUnit(unit);
+}
+
 export async function getUnit(businessId: string, id: string) {
   const unit = await prisma.unit.findUnique({
     where: { id },

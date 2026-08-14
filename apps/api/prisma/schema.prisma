@@ -127,6 +127,11 @@ model ServiceLog {
   notes         String?
   nextDueDate   DateTime
 
+  latitude            Float?
+  longitude           Float?
+  locationCapturedAt  DateTime?
+  clientRequestId     String?   @unique
+
   createdAt     DateTime @default(now())
 
   @@index([unitId])

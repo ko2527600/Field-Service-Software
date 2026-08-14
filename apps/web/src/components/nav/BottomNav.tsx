@@ -1,10 +1,11 @@
 import { NavLink } from "react-router-dom";
-import { HomeIcon, CustomersIcon, ClockIcon, InvoiceIcon, DownloadIcon } from "../icons/index.js";
+import { HomeIcon, CustomersIcon, ClockIcon, InvoiceIcon, DownloadIcon, ScanIcon } from "../icons/index.js";
 
 const items = [
   { to: "/", label: "Home", Icon: HomeIcon },
   { to: "/customers", label: "Customers", Icon: CustomersIcon },
   { to: "/priority", label: "Priority", Icon: ClockIcon },
+  { to: "/scan", label: "Scan", Icon: ScanIcon },
   { to: "/invoices", label: "Invoices", Icon: InvoiceIcon },
   { to: "/export", label: "Export", Icon: DownloadIcon },
 ];
