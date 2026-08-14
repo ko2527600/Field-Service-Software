@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { serviceLogInputSchema, computeNextRenewalDate, type ServiceLogInput } from "@firearmour/shared";
 import { getUnit } from "../api/units.js";
 import { createServiceLog } from "../api/serviceLogs.js";
+import { ApiError } from "../api/client.js";
+import { enqueueServiceLog } from "../offline/syncQueue.js";
 import type { UnitWithLogs } from "../api/types.js";
 import { FormField, inputClass } from "../components/FormField.js";
 import { useOnlineStatus } from "../hooks/useOnlineStatus.js";
@@ -32,6 +34,7 @@ export default function ServiceLogForm() {
   const [unit, setUnit] = useState<UnitWithLogs | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const clientRequestIdRef = useRef(crypto.randomUUID());
 
   const {
     register,
@@ -72,16 +75,31 @@ export default function ServiceLogForm() {
   async function onSubmit(data: ServiceLogInput) {
     if (!unitId) return;
     setSubmitError(null);
+    const location = await captureLocation();
+    const payload: ServiceLogInput = {
+      ...data,
+      latitude: location?.latitude,
+      longitude: location?.longitude,
+      clientRequestId: clientRequestIdRef.current,
+    };
+
+    if (!navigator.onLine) {
+      await enqueueServiceLog(unitId, payload);
+      navigate(`/units/${unitId}`, { state: { offlineSaved: true } });
+      return;
+    }
+
     try {
-      const location = await captureLocation();
-      await createServiceLog(unitId, {
-        ...data,
-        latitude: location?.latitude,
-        longitude: location?.longitude,
-      });
+      await createServiceLog(unitId, payload);
       navigate(`/units/${unitId}`);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Something went wrong");
+      if (err instanceof ApiError) {
+        setSubmitError(err.message);
+        return;
+      }
+      // Network-level failure even though we thought we were online (e.g. a flaky connection) -- queue it instead of losing the visit.
+      await enqueueServiceLog(unitId, payload);
+      navigate(`/units/${unitId}`, { state: { offlineSaved: true } });
     }
   }
 
@@ -125,11 +143,16 @@ export default function ServiceLogForm() {
         </p>
 
         {submitError && <p className="text-sm text-red-600">{submitError}</p>}
-        {!online && <p className="text-sm text-amber-700">You're offline — reconnect to save this visit.</p>}
+        {!online && (
+          <p className="text-sm text-amber-700">
+            You're offline — this visit will be saved on your device and synced automatically once you're
+            back online.
+          </p>
+        )}
 
         <button
           type="submit"
-          disabled={isSubmitting || !online}
+          disabled={isSubmitting}
           className="w-full rounded-lg bg-brand text-white text-sm font-medium px-4 py-2 shadow-card hover:bg-brand-dark disabled:opacity-50"
         >
           {isSubmitting ? "Saving…" : "Save Visit"}

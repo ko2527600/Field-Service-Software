@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import QRCode from "qrcode";
 import { EXTINGUISHER_TYPE_LABELS, RENEWAL_PERIOD_LABELS } from "@firearmour/shared";
 import { deleteUnit, getUnit } from "../api/units.js";
@@ -10,6 +10,8 @@ import { PlusIcon, MapPinIcon, ClockIcon, CheckCircleIcon } from "../components/
 export default function UnitDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const offlineSaved = Boolean((location.state as { offlineSaved?: boolean } | null)?.offlineSaved);
   const [unit, setUnit] = useState<UnitWithLogs | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +22,13 @@ export default function UnitDetail() {
     setLoading(true);
     getUnit(id)
       .then(setUnit)
-      .catch((err) => setError(err.message))
+      .catch((err) => {
+        if (!navigator.onLine) {
+          setError("You're offline and this extinguisher hasn't been viewed on this device before, so it isn't available offline yet.");
+          return;
+        }
+        setError(err.message);
+      })
       .finally(() => setLoading(false));
   }
 
@@ -40,12 +48,33 @@ export default function UnitDetail() {
     navigate(`/customers/${unit.customerId}`);
   }
 
-  if (loading) return <p className="text-gray-500">Loading…</p>;
-  if (error) return <p className="text-red-600">{error}</p>;
-  if (!unit) return null;
+  const offlineSavedBanner = offlineSaved && (
+    <div className="rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm px-3 py-2">
+      Saved offline — this visit will sync automatically once you're back online.
+    </div>
+  );
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {offlineSavedBanner}
+        <p className="text-gray-500">Loading…</p>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="space-y-4">
+        {offlineSavedBanner}
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
+  if (!unit) return offlineSavedBanner || null;
 
   return (
     <div className="space-y-6">
+      {offlineSavedBanner}
       <div className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-xl font-extrabold tracking-tight">
