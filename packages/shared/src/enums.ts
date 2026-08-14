@@ -24,6 +24,14 @@ export type UnitStatus = (typeof UNIT_STATUSES)[number];
 export const USER_ROLES = ["ADMIN", "CLIENT"] as const;
 export type UserRole = (typeof USER_ROLES)[number];
 
+export const SMS_GATEWAYS = ["CAPCOM6", "HUBTEL"] as const;
+export type SmsGateway = (typeof SMS_GATEWAYS)[number];
+
+export const SMS_GATEWAY_LABELS: Record<SmsGateway, string> = {
+  CAPCOM6: "SMS Gateway for Android (free)",
+  HUBTEL: "Hubtel SMS",
+};
+
 export const RENEWAL_PERIOD_LABELS: Record<RenewalPeriod, string> = {
   MONTHLY: "Monthly",
   QUARTERLY: "Quarterly",

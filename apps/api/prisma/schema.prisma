@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum SmsGateway {
+  CAPCOM6
+  HUBTEL
+}
+
 model Business {
   id           String   @id @default(uuid())
   name         String
@@ -21,6 +26,7 @@ model Business {
   nextInvoiceSeq Int    @default(1)
   smsRemindersEnabled   Boolean @default(false)
   smsReminderDaysBefore Int     @default(7)
+  smsGateway            SmsGateway @default(CAPCOM6)
   createdAt    DateTime @default(now())
 
   customers Customer[]

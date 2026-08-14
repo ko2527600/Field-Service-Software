@@ -23,6 +23,7 @@ export async function updateBusinessProfile(businessId: string, input: BusinessP
       email2: input.email2 || null,
       smsRemindersEnabled: input.smsRemindersEnabled,
       smsReminderDaysBefore: input.smsReminderDaysBefore,
+      smsGateway: input.smsGateway,
     },
   });
 }

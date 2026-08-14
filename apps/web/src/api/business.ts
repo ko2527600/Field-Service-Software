@@ -1,4 +1,4 @@
-import type { BusinessProfileInput } from "@firearmour/shared";
+import type { BusinessProfileInput, SmsGateway } from "@firearmour/shared";
 import { api } from "./client.js";
 
 export type Business = {
@@ -14,6 +14,7 @@ export type Business = {
   email2: string | null;
   smsRemindersEnabled: boolean;
   smsReminderDaysBefore: number;
+  smsGateway: SmsGateway;
   createdAt: string;
 };
 
